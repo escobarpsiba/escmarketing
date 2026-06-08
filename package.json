@@ -1,0 +1,17 @@
+{
+  "name": "esc-marketing",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "live-server public --port=5500 --open=index.html",
+    "start": "live-server public --port=5500 --open=index.html"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}

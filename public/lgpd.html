@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESC Marketing - LGPD</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #ec4899;
+            --accent: #06b6d4;
+            --dark: #0f172a;
+            --darker: #020617;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass: rgba(30,41,59,0.6);
+            --glass-border: rgba(255,255,255,0.08);
+            --gradient-1: linear-gradient(135deg, #6366f1 0%, #ec4899 50%, #06b6d4 100%);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; overflow-x: hidden; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--darker);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--darker); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4f46e5; }
+        ::selection { background: var(--primary); color: #fff; }
+        a { color: var(--primary); text-decoration: none; transition: all 0.3s ease; }
+        a:hover { color: var(--accent); }
+        ul { list-style: none; }
+
+        .bg-grid {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px);
+            background-size: 60px 60px; pointer-events: none; z-index: 0;
+        }
+        .bg-glow { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; opacity: 0.3; }
+        .glow-1 { width: 600px; height: 600px; background: var(--primary); top: -200px; left: -200px; }
+        .glow-2 { width: 500px; height: 500px; background: var(--secondary); bottom: -150px; right: -150px; }
+        .glow-3 { width: 400px; height: 400px; background: var(--accent); top: 50%; left: 50%; transform: translate(-50%, -50%); }
+
+        .loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--darker); display: flex; align-items: center; justify-content: center; z-index: 99999; transition: opacity 0.5s ease, visibility 0.5s ease; }
+        .loader.hidden { opacity: 0; visibility: hidden; }
+        .loader-content { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
+        .loader-spinner { width: 48px; height: 48px; border: 3px solid var(--glass-border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        #navbar { position: fixed; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 1rem 5%; z-index: 9999; background: transparent; transition: all 0.4s ease; }
+        #navbar.scrolled { background: rgba(2,6,23,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--glass-border); padding: 0.7rem 5%; }
+        #navbar .logo img { height: 36px; width: auto; display: block; }
+        .nav-links { display: flex; gap: 2.5rem; }
+        .nav-links a { color: var(--text-muted); font-size: 0.9rem; font-weight: 500; position: relative; transition: color 0.3s ease; }
+        .nav-links a::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--gradient-1); transition: width 0.3s ease; border-radius: 2px; }
+        .nav-links a:hover { color: var(--text); }
+        .nav-links a:hover::after { width: 100%; }
+        .nav-cta { background: var(--gradient-1); color: #fff !important; padding: 0.6rem 1.5rem; border-radius: 50px; font-weight: 600; font-size: 0.9rem; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(99,102,241,0.3); }
+        .mobile-menu-btn { display: none; background: none; border: none; color: var(--text); font-size: 1.5rem; cursor: pointer; padding: 0.5rem; }
+
+        #mobileMenu { display: none; position: fixed; top: 0; right: -100%; width: 300px; height: 100vh; background: rgba(2,6,23,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-left: 1px solid var(--glass-border); padding: 5rem 2rem; z-index: 99991; transition: right 0.4s ease; flex-direction: column; gap: 1.5rem; }
+        #mobileMenu.active { right: 0; display: flex; }
+        #mobileMenu a { color: var(--text-muted); font-size: 1.1rem; font-weight: 500; padding: 0.8rem 0; border-bottom: 1px solid var(--glass-border); transition: color 0.3s ease; }
+        #mobileMenu a:hover { color: var(--primary); }
+        #mobileOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 99990; opacity: 0; transition: opacity 0.4s ease; }
+        #mobileOverlay.active { display: block; opacity: 1; }
+
+        .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--glass); border: 1px solid var(--glass-border); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 16px; padding: 1rem 1.5rem; display: flex; align-items: center; gap: 0.8rem; color: var(--text); font-size: 0.9rem; z-index: 99998; transform: translateY(120%); opacity: 0; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-width: 400px; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast i { font-size: 1.2rem; }
+        .toast.success i { color: #22c55e; }
+        .toast.error i { color: #ef4444; }
+
+        footer { position: relative; z-index: 2; background: var(--dark); border-top: 1px solid var(--glass-border); padding: 4rem 5% 2rem; margin-top: 4rem; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; max-width: 1200px; margin: 0 auto; }
+        .footer-brand img { height: 36px; width: auto; margin-bottom: 1rem; }
+        .footer-brand p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.7; max-width: 300px; }
+        .footer-col h4 { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; margin-bottom: 1.2rem; color: var(--text); }
+        .footer-col a { display: block; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.7rem; transition: color 0.3s ease; }
+        .footer-col a:hover { color: var(--primary); }
+        .footer-social { display: flex; gap: 1rem; margin-top: 1.5rem; }
+        .footer-social a { width: 40px; height: 40px; border-radius: 50%; background: var(--glass); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 1rem; transition: all 0.3s ease; }
+        .footer-social a:hover { background: var(--primary); color: #fff; transform: translateY(-3px); }
+        .footer-bottom { border-top: 1px solid var(--glass-border); margin-top: 3rem; padding-top: 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.8rem; }
+        .footer-bottom .legal-links { display: flex; justify-content: center; gap: 2rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .footer-bottom .legal-links a { color: var(--text-muted); font-size: 0.8rem; }
+        .footer-bottom .legal-links a:hover { color: var(--primary); }
+
+        .legal-header { padding: 140px 5% 60px; text-align: center; position: relative; z-index: 2; }
+        .legal-header h1 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(2rem, 4vw, 3rem); }
+        .legal-header p { color: var(--text-muted); margin-top: 1rem; font-size: 1.1rem; }
+        .legal-content { max-width: 900px; margin: 0 auto; padding: 0 5% 80px; position: relative; z-index: 2; }
+        .legal-content section { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 24px; padding: 2.5rem; margin-bottom: 2rem; }
+        .legal-content h2 { font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; margin-bottom: 1rem; background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .legal-content h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; margin-bottom: 0.8rem; margin-top: 1.5rem; color: var(--text); }
+        .legal-content p { color: var(--text-muted); line-height: 1.8; margin-bottom: 1rem; }
+        .legal-content ul { color: var(--text-muted); padding-left: 1.5rem; margin-bottom: 1rem; }
+        .legal-content ul li { margin-bottom: 0.5rem; line-height: 1.7; }
+        .legal-content ul li::marker { color: var(--primary); }
+        .legal-meta { font-size: 0.85rem; color: var(--text-muted); margin-top: 1rem; text-align: center; opacity: 0.6; }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--text-muted); text-decoration: none; font-size: 0.95rem; margin-bottom: 2rem; transition: color 0.3s ease; }
+        .back-link:hover { color: var(--primary); }
+
+        @media (max-width: 768px) { .legal-content section { padding: 1.5rem; } .nav-links, .nav-cta { display: none; } .mobile-menu-btn { display: block; } .footer-grid { grid-template-columns: 1fr; gap: 2rem; } .footer-brand p { max-width: 100%; } }
+        @media (max-width: 480px) { #navbar { padding: 0.8rem 5%; } #mobileMenu { width: 100%; } .footer-bottom .legal-links { gap: 1rem; } }
+    </style>
+</head>
+<body>
+    <div class="loader" id="loader">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <img src="assets/images/logo-esc.png" alt="ESC Marketing" style="height:36px;width:auto;margin-top:0.5rem;opacity:0.7">
+        </div>
+    </div>
+
+    <div class="bg-grid"></div>
+    <div class="bg-glow glow-1"></div>
+    <div class="bg-glow glow-2"></div>
+    <div class="bg-glow glow-3"></div>
+
+    <nav id="navbar">
+        <a href="index.html" class="logo"><img src="assets/images/logo-esc.png" alt="ESC Marketing"></a>
+        <ul class="nav-links">
+            <li><a href="index.html#servicos">Serviços</a></li>
+            <li><a href="index.html#sobre">Sobre</a></li>
+            <li><a href="index.html#portfolio">Portfólio</a></li>
+            <li><a href="index.html#contato">Contato</a></li>
+        </ul>
+        <a href="index.html#contato" class="nav-cta">Começar Projeto</a>
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()"><i class="fas fa-bars"></i></button>
+    </nav>
+
+    <div id="mobileOverlay" onclick="toggleMobileMenu()"></div>
+    <div id="mobileMenu">
+        <a href="index.html#servicos" onclick="toggleMobileMenu()">Serviços</a>
+        <a href="index.html#sobre" onclick="toggleMobileMenu()">Sobre</a>
+        <a href="index.html#portfolio" onclick="toggleMobileMenu()">Portfólio</a>
+        <a href="index.html#contato" onclick="toggleMobileMenu()">Contato</a>
+        <a href="index.html#contato" onclick="toggleMobileMenu()" style="margin-top:1rem;background:var(--gradient-1);color:#fff!important;text-align:center;padding:0.8rem;border-radius:50px;border:none;">Começar Projeto</a>
+    </div>
+
+    <header class="legal-header">
+        <h1>LGPD - Lei Geral de Proteção de Dados</h1>
+        <p>Nosso compromisso com a proteção dos seus dados pessoais</p>
+        <div class="legal-meta">Última atualização: Junho de 2026</div>
+    </header>
+
+    <div class="legal-content">
+        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Voltar ao início</a>
+
+        <section>
+            <h2>Base Legal</h2>
+            <p>O tratamento de dados pessoais realizado pela ESC Marketing está fundamentado nas bases legais previstas na Lei nº 13.709/2018 (LGPD), sendo elas:</p>
+            <ul>
+                <li><strong>Consentimento do titular:</strong> Quando você nos fornece voluntariamente seus dados para finalidades específicas, como contato e orçamentos</li>
+                <li><strong>Cumprimento de obrigação legal ou regulatória:</strong> Quando necessário para atender exigências legais aplicáveis</li>
+                <li><strong>Execução de contrato:</strong> Para a prestação de serviços contratados</li>
+                <li><strong>Exercício regular de direitos:</strong> Em processos judiciais, administrativos ou arbitrais</li>
+            </ul>
+            <p>Respeitamos os princípios da finalidade, adequação, necessidade, livre acesso, qualidade dos dados, transparência, segurança, prevenção, não discriminação e responsabilização previstos na LGPD.</p>
+        </section>
+
+        <section>
+            <h2>Dados Coletados</h2>
+            <p>A ESC Marketing coleta os seguintes dados pessoais, conforme a interação do usuário com nosso site:</p>
+            <ul>
+                <li>Nome completo</li>
+                <li>Endereço de e-mail</li>
+                <li>Número de telefone / WhatsApp</li>
+                <li>Nome da empresa e cargo</li>
+                <li>Mensagens e conteúdos enviados através do formulário de contato</li>
+                <li>Dados de navegação (endereço IP, tipo de navegador, páginas visitadas, tempo de sessão)</li>
+            </ul>
+            <p>Coletamos apenas os dados estritamente necessários para atingir as finalidades informadas ao titular.</p>
+        </section>
+
+        <section>
+            <h2>Finalidade do Tratamento</h2>
+            <p>Seus dados pessoais são tratados pela ESC Marketing para as seguintes finalidades:</p>
+            <ul>
+                <li>Responder a solicitações de contato, propostas e orçamentos</li>
+                <li>Viabilizar a prestação de serviços contratados</li>
+                <li>Enviar comunicações informativas e marketing, quando houver consentimento</li>
+                <li>Melhorar a experiência de navegação e personalizar conteúdo</li>
+                <li>Cumprir obrigações legais e regulatórias</li>
+                <li>Exercer direitos em processos judiciais ou administrativos</li>
+            </ul>
+            <p>Não tratamos dados pessoais para finalidades incompatíveis com aquelas informadas ao titular no momento da coleta.</p>
+        </section>
+
+        <section>
+            <h2>Compartilhamento</h2>
+            <p>Seus dados pessoais poderão ser compartilhados nas seguintes hipóteses:</p>
+            <ul>
+                <li>Com prestadores de serviços essenciais (plataforma de hospedagem, ferramentas de e-mail e analytics), mediante contrato que garanta a proteção adequada dos dados</li>
+                <li>Para cumprimento de obrigação legal, ordem judicial ou requisição de autoridades competentes</li>
+                <li>Com seu consentimento expresso para finalidades específicas</li>
+            </ul>
+            <p>A ESC Marketing não comercializa dados pessoais sob nenhuma hipótese.</p>
+        </section>
+
+        <section>
+            <h2>Direitos do Titular (Art. 18 LGPD)</h2>
+            <p>Em conformidade com o Art. 18 da LGPD, você possui os seguintes direitos em relação aos seus dados pessoais:</p>
+            <ul>
+                <li><strong>Confirmação e acesso:</strong> Saber se tratamos seus dados e acessá-los</li>
+                <li><strong>Correção:</strong> Solicitar a correção de dados incompletos, inexatos ou desatualizados</li>
+                <li><strong>Anonimização, bloqueio ou eliminação:</strong> Solicitar a anonimização, bloqueio ou eliminação de dados desnecessários, excessivos ou tratados em desconformidade com a LGPD</li>
+                <li><strong>Portabilidade:</strong> Solicitar a portabilidade dos dados a outro fornecedor de serviço</li>
+                <li><strong>Eliminação:</strong> Solicitar a eliminação dos dados tratados com seu consentimento</li>
+                <li><strong>Informação:</strong> Ser informado sobre entidades públicas ou privadas com as quais compartilhamos seus dados</li>
+                <li><strong>Revogação do consentimento:</strong> Revogar o consentimento a qualquer tempo</li>
+                <li><strong>Oposição:</strong> Opor-se ao tratamento não autorizado por lei</li>
+            </ul>
+            <p>Para exercer qualquer um desses direitos, entre em contato conosco através do e-mail do nosso Encarregado (DPO).</p>
+        </section>
+
+        <section>
+            <h2>Encarregado (DPO)</h2>
+            <p>Nosso Encarregado pelo Tratamento de Dados Pessoais (DPO) está disponível para esclarecer dúvidas e atender solicitações relacionadas à proteção de dados:</p>
+            <p><strong>E-mail do DPO:</strong> <a href="mailto:contato@escmarketing.com.br">contato@escmarketing.com.br</a></p>
+        </section>
+
+        <section>
+            <h2>Prazo de Conservação</h2>
+            <p>Seus dados pessoais serão mantidos pelo período necessário ao cumprimento das finalidades para as quais foram coletados, observando:</p>
+            <ul>
+                <li>O prazo de conservação determinado pela legislação aplicável</li>
+                <li>O período necessário para cumprimento de obrigações legais ou contratuais</li>
+                <li>O prazo prescricional para exercício de direitos em processos judiciais ou administrativos</li>
+            </ul>
+            <p>Após o término do período de conservação, os dados serão eliminados ou anonimizados de forma segura, exceto quando a manutenção for autorizada por lei.</p>
+        </section>
+
+        <section>
+            <h2>Medidas de Segurança</h2>
+            <p>A ESC Marketing adota medidas técnicas e administrativas para proteger os dados pessoais contra acessos não autorizados, situações acidentais ou ilícitas de destruição, perda, alteração, comunicação ou qualquer forma de tratamento inadequado ou ilícito:</p>
+            <ul>
+                <li>Criptografia SSL/TLS em todas as comunicações</li>
+                <li>Controles de acesso baseados em necessidade</li>
+                <li>Firewalls e sistemas de detecção de intrusão</li>
+                <li>Políticas internas de segurança da informação</li>
+                <li>Treinamento periódico da equipe sobre proteção de dados</li>
+                <li>Procedimentos para resposta a incidentes de segurança</li>
+            </ul>
+            <p>Mantemos registros das operações de tratamento de dados pessoais, conforme exigido pelo Art. 37 da LGPD.</p>
+        </section>
+    </div>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <img src="assets/images/logo-esc.png" alt="ESC Marketing">
+                <p>Transformando marcas em experiências digitais extraordinárias. Estratégia, criatividade e tecnologia para impulsionar resultados.</p>
+                <div class="footer-social">
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Navegação</h4>
+                <a href="index.html#servicos">Serviços</a>
+                <a href="index.html#sobre">Sobre</a>
+                <a href="index.html#portfolio">Portfólio</a>
+                <a href="index.html#contato">Contato</a>
+            </div>
+            <div class="footer-col">
+                <h4>Serviços</h4>
+                <a href="index.html#servicos">Web Design</a>
+                <a href="index.html#servicos">Marketing Digital</a>
+                <a href="index.html#servicos">Branding</a>
+                <a href="index.html#servicos">SEO</a>
+            </div>
+            <div class="footer-col">
+                <h4>Legal</h4>
+                <a href="privacidade.html">Política de Privacidade</a>
+                <a href="termos.html">Termos de Uso</a>
+                <a href="lgpd.html">LGPD</a>
+                <a href="cookies.html">Política de Cookies</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="legal-links">
+                <a href="privacidade.html">Política de Privacidade</a>
+                <a href="termos.html">Termos de Uso</a>
+                <a href="lgpd.html">LGPD</a>
+                <a href="cookies.html">Cookies</a>
+            </div>
+            <p>&copy; 2026 ESC Marketing. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Mensagem enviada com sucesso!</span>
+    </div>
+
+    <script>
+        window.addEventListener('load', () => {
+            setTimeout(() => { document.getElementById('loader').classList.add('hidden'); }, 800);
+        });
+        window.addEventListener('scroll', () => {
+            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+        });
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('active');
+            document.getElementById('mobileOverlay').classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
