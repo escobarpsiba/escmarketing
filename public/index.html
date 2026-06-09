@@ -830,37 +830,7 @@
             transform: scale(1.1);
         }
         .portfolio-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.3) 50%, transparent 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: 2rem;
-            opacity: 0;
-            transition: all 0.4s ease;
-        }
-        .portfolio-item:hover .portfolio-overlay {
-            opacity: 1;
-        }
-        .portfolio-tag {
-            display: inline-block;
-            background: var(--gradient-1);
-            padding: 0.3rem 0.8rem;
-            border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-bottom: 0.8rem;
-            width: fit-content;
-        }
-        .portfolio-overlay h3 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.3rem;
-            margin-bottom: 0.5rem;
-        }
-        .portfolio-overlay p {
-            font-size: 0.9rem;
-            color: var(--text-muted);
+            display: none;
         }
 
         /* Testimonials */
@@ -2731,12 +2701,6 @@
                 grid.innerHTML = portfolioItems.map((item, i) => `
                     <div class="portfolio-item animate-on-scroll ${variants[i % variants.length]}" onclick="openPostModal('${item.id}')" style="cursor:pointer;">
                         <img src="${item.image || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop'}" alt="${item.title}" onerror="this.src='https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop'">
-                        <div class="portfolio-overlay">
-                            <span class="portfolio-tag">${item.tag || (item.category === 'portfolio' ? 'Portfólio' : item.category === 'servicos' ? 'Serviços' : 'Projeto')}</span>
-                            <h3>${item.title}</h3>
-                            ${item.description ? '<p>' + item.description + '</p>' : ''}
-                            ${item.result ? '<p style="margin-top:0.3rem;color:var(--primary);font-size:0.85rem;font-weight:600;"><i class="fas fa-chart-line"></i> ' + item.result + '</p>' : ''}
-                        </div>
                     </div>
                 `).join('');
                 grid.querySelectorAll('.animate-on-scroll').forEach(el => {
