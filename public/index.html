@@ -2658,11 +2658,10 @@
 
         // Post Detail Modal
         async function openPostModal(id) {
-            let post = cachedPortfolioPosts.find(p => p.id === id);
-            if (!post) {
-                const posts = await SiteData.sbGetBlogPosts('portfolio');
-                if (posts) post = posts.find(p => p.id === id);
-            }
+            let post;
+            const fresh = await SiteData.sbGetBlogPosts('portfolio');
+            if (fresh) post = fresh.find(p => p.id === id);
+            if (!post) post = cachedPortfolioPosts.find(p => p.id === id);
             if (!post) return;
 
             const modal = document.getElementById('postModal');
