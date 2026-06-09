@@ -38,7 +38,14 @@ const supabase = {
     return this.request('POST', table, { body, params, headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' } });
   },
 
+  async ensureBucket(name) {
+    try {
+      await this.request('POST', 'rpc/ensure_image_bucket', { body: {} });
+    } catch { /* RPC not available yet */ }
+  },
+
   async uploadImage(bucket, path, file) {
+    await this.ensureBucket(bucket);
     const res = await fetch(`${this.url}/storage/v1/upload/${bucket}/${path}`, {
       method: 'POST',
       headers: {
