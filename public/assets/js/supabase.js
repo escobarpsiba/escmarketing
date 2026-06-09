@@ -39,7 +39,7 @@ const supabase = {
   },
 
   async uploadImage(bucket, path, file) {
-    const res = await fetch(`${this.url}/storage/v1/object/${bucket}/${path}`, {
+    const res = await fetch(`${this.url}/storage/v1/upload/${bucket}/${path}`, {
       method: 'POST',
       headers: {
         'apikey': this.anonKey,
