@@ -138,12 +138,30 @@ const SiteData = {
   },
   async sbAddMediaItem(item) {
     item.id = Date.now().toString(36);
+    const file = item.file;
+    delete item.file;
+
+    if (file) {
+      const ext = file.name.split('.').pop().toLowerCase().replace(/[^a-z0-9]/g, '');
+      const path = `${item.id}.${ext || 'png'}`;
+      try {
+        const publicUrl = await supabase.uploadImage('media', path, file);
+        item.data = publicUrl;
+      } catch {
+        const list = this.getMedia();
+        list.unshift(item);
+        this.set('media', list);
+      }
+    }
+
     try {
       await supabase.post('media', item);
     } catch {
       const list = this.getMedia();
-      list.unshift(item);
-      this.set('media', list);
+      if (!list.find(l => l.id === item.id)) {
+        list.unshift(item);
+        this.set('media', list);
+      }
     }
     return item;
   },

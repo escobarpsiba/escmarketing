@@ -38,6 +38,23 @@ const supabase = {
     return this.request('POST', table, { body, params, headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' } });
   },
 
+  async uploadImage(bucket, path, file) {
+    const res = await fetch(`${this.url}/storage/v1/object/${bucket}/${path}`, {
+      method: 'POST',
+      headers: {
+        'apikey': this.anonKey,
+        'Authorization': `Bearer ${this.anonKey}`,
+        'Content-Type': file.type || 'application/octet-stream'
+      },
+      body: file
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Storage upload failed: ${res.status} ${text || res.statusText}`);
+    }
+    return `${this.url}/storage/v1/object/public/${bucket}/${path}`;
+  },
+
   async isAvailable() {
     try {
       await this.get('seo', { select: 'id', limit: '1' });

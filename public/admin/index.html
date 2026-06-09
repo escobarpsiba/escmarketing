@@ -768,7 +768,7 @@
                 if (!file.type.startsWith('image/')) { processed++; return; }
                 const reader = new FileReader();
                 reader.onload = async function(e) {
-                    await SiteData.sbAddMediaItem({ name: file.name, data: e.target.result });
+                    await SiteData.sbAddMediaItem({ name: file.name, data: e.target.result, file: file });
                     processed++;
                     if (processed === total) {
                         loadMedia();
