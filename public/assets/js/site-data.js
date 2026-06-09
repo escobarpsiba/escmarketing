@@ -133,7 +133,7 @@ const SiteData = {
 
   async sbGetMedia() {
     const rows = await this.sbList('media');
-    if (rows) return rows.map(r => ({ id: r.id, name: r.name, data: r.data }));
+    if (rows && rows.length) return rows.map(r => ({ id: r.id, name: r.name, data: r.data }));
     return this.get('media') || [];
   },
   async sbAddMediaItem(item) {
@@ -258,15 +258,15 @@ const SiteData = {
     if (category) params.category = `eq.${category}`;
     try {
       const rows = await supabase.get('blog_posts', params);
-      if (rows) {
+      if (rows && rows.length) {
         const localPosts = this.getBlogPosts();
         return rows.map(r => {
           const local = localPosts.find(l => l.id === r.id);
           return { id: r.id, title: r.title, description: r.description, content: r.content, category: r.category, service_slug: r.service_slug, image: r.image, cta_text: local?.cta_text || r.cta_text, cta_url: local?.cta_url || r.cta_url, status: r.status, created_at: r.created_at };
         });
       }
-      return null;
-    } catch { return null; }
+      return this.getBlogPosts();
+    } catch { return this.getBlogPosts(); }
   },
   async sbAddBlogPost(item) {
     item.id = Date.now().toString(36);
