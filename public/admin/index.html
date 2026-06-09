@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
     <style>
         :root {
             --primary: #6366f1; --primary-dark: #4f46e5; --secondary: #ec4899; --accent: #06b6d4;
@@ -233,6 +234,34 @@
         .modal-header h2 { font-family:'Space Grotesk',sans-serif; font-size:1.3rem; }
         .modal-close { background:none; border:none; color:var(--text-dim); font-size:1.2rem; cursor:pointer; }
 
+        #blogContentEditor { height: 350px; margin-bottom: 1rem; }
+        #blogContentEditor .ql-toolbar {
+            background: var(--dark); border: 1px solid var(--glass-border); border-radius: 10px 10px 0 0;
+        }
+        #blogContentEditor .ql-container {
+            background: var(--dark); border: 1px solid var(--glass-border); border-top: none;
+            border-radius: 0 0 10px 10px; font-family: 'Inter', sans-serif; font-size: 0.95rem;
+            color: var(--text);
+        }
+        #blogContentEditor .ql-editor { min-height: 280px; }
+        #blogContentEditor .ql-editor.ql-blank::before {
+            color: var(--text-dim); font-style: normal;
+        }
+        #blogContentEditor .ql-toolbar .ql-stroke { stroke: var(--text-muted); }
+        #blogContentEditor .ql-toolbar .ql-fill { fill: var(--text-muted); }
+        #blogContentEditor .ql-toolbar .ql-picker { color: var(--text-muted); }
+        #blogContentEditor .ql-toolbar button:hover .ql-stroke,
+        #blogContentEditor .ql-toolbar button.ql-active .ql-stroke { stroke: var(--primary); }
+        #blogContentEditor .ql-toolbar button:hover .ql-fill,
+        #blogContentEditor .ql-toolbar button.ql-active .ql-fill { fill: var(--primary); }
+        #blogContentEditor .ql-toolbar .ql-picker:hover,
+        #blogContentEditor .ql-toolbar .ql-picker.ql-active { color: var(--primary); }
+        #blogContentEditor .ql-toolbar .ql-picker-options {
+            background: var(--dark); border-color: var(--glass-border);
+        }
+        #blogContentEditor .ql-editor h3 { font-family: 'Space Grotesk', sans-serif; color: var(--text); }
+        #blogContentEditor .ql-editor p { color: var(--text); }
+
         @media (max-width:768px) {
             .sidebar { width:220px; padding:1.5rem 1rem; }
             .main-content { margin-left:220px; padding:1.5rem; }
@@ -443,8 +472,8 @@
                 <textarea id="blogDescription" rows="3" placeholder="Breve descrição do post"></textarea>
             </div>
             <div class="form-group">
-                <label>Conteúdo (HTML)</label>
-                <textarea id="blogContent" rows="10" placeholder="Conteúdo completo em HTML do post..."></textarea>
+                <label>Conteúdo</label>
+                <div id="blogContentEditor"></div>
             </div>
             <div class="form-row">
                 <div class="form-group">
@@ -513,6 +542,7 @@
 
     <script src="../assets/js/supabase.js"></script>
     <script src="../assets/js/site-data.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
     <script>
         const ADMIN_PASSWORD = 'esc2024';
         let currentSection = 'seo';
@@ -755,6 +785,40 @@
 
         // Blog functions
         let blogCategoryFilter = '';
+        let blogEditor;
+
+        function initBlogEditor() {
+            if (blogEditor) { blogEditor.root.innerHTML = ''; return blogEditor; }
+            blogEditor = new Quill('#blogContentEditor', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        [{ header: [false, 3, 4] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ list: 'ordered' }, { list: 'bullet' }],
+                        ['blockquote', 'code-block'],
+                        [{ color: [] }, { background: [] }],
+                        ['link'],
+                        ['clean']
+                    ],
+                    clipboard: {
+                        matchVisual: false
+                    }
+                },
+                placeholder: 'Escreva o conteúdo do post aqui...'
+            });
+            return blogEditor;
+        }
+
+        function getBlogContent() {
+            if (!blogEditor) return '';
+            return blogEditor.root.innerHTML;
+        }
+
+        function setBlogContent(html) {
+            if (!blogEditor) return;
+            blogEditor.root.innerHTML = html || '';
+        }
 
         async function loadBlog(category) {
             blogCategoryFilter = category || '';
@@ -798,10 +862,11 @@
         }
 
         function openBlogModal(data) {
+            initBlogEditor();
             document.getElementById('blogEditId').value = data?.id || '';
             document.getElementById('blogTitle').value = data?.title || '';
             document.getElementById('blogDescription').value = data?.description || '';
-            document.getElementById('blogContent').value = data?.content || '';
+            setBlogContent(data?.content || '');
             document.getElementById('blogCategory').value = data?.category || 'portfolio';
             document.getElementById('blogService').value = data?.service_slug || 'desenvolvimento-web';
             document.getElementById('blogImage').value = data?.image || '';
@@ -811,6 +876,7 @@
             document.getElementById('blogModalTitle').textContent = data?.id ? 'Editar Post' : 'Novo Post';
             toggleBlogServiceField();
             document.getElementById('blogModal').classList.add('active');
+            setTimeout(() => blogEditor?.focus(), 100);
         }
 
         function closeBlogModal() {
@@ -827,7 +893,7 @@
             const data = {
                 title: document.getElementById('blogTitle').value,
                 description: document.getElementById('blogDescription').value,
-                content: document.getElementById('blogContent').value,
+                content: getBlogContent(),
                 category: document.getElementById('blogCategory').value,
                 service_slug: document.getElementById('blogCategory').value === 'servicos' ? document.getElementById('blogService').value : null,
                 image: document.getElementById('blogImage').value,
