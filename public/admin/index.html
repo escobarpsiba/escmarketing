@@ -524,6 +524,20 @@
                     </select>
                 </div>
             </div>
+            <div class="card" style="margin-top:1rem;padding:1rem;">
+                <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1rem;margin-bottom:0.8rem;"><i class="fas fa-link"></i> Call to Action (CTA)</h3>
+                <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1rem;">Link para ação — usado em posts de portfólio para levar o visitante ao site do projeto.</p>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Texto do Botão</label>
+                        <input type="text" id="blogCtaText" placeholder="Ex: Ver Projeto, Acessar Site">
+                    </div>
+                    <div class="form-group">
+                        <label>URL do CTA</label>
+                        <input type="url" id="blogCtaUrl" placeholder="https://projeto.com">
+                    </div>
+                </div>
+            </div>
             <div style="display:flex;gap:0.8rem;justify-content:flex-end;">
                 <button class="btn btn-secondary" onclick="closeBlogModal()">Cancelar</button>
                 <button class="btn btn-primary" onclick="saveBlogPost()"><i class="fas fa-check"></i> Salvar</button>
@@ -887,8 +901,10 @@
                         <div style="display:flex;gap:0.4rem;margin-top:0.5rem;flex-wrap:wrap;">
                             <span class="tag" style="font-size:0.7rem;">${p.category === 'portfolio' ? '📁 Portfólio' : '🔧 Serviços'}</span>
                             ${p.service_slug ? '<span class="tag" style="font-size:0.7rem;background:var(--gradient-2);">' + p.service_slug.replace('desenvolvimento-web','Desenv. Web').replace('marketing-digital','Mkt Digital').replace('design-branding','Design & Branding') + '</span>' : ''}
+                            ${p.cta_url ? '<span class="badge" style="background:rgba(99,102,241,0.15);color:#6366f1;"><i class="fas fa-link"></i> CTA</span>' : ''}
                             <span class="badge ${p.status === 'published' ? 'badge-success' : ''}" style="${p.status !== 'published' ? 'background:rgba(251,191,36,0.15);color:#fbbf24;' : ''}">${p.status === 'published' ? 'Publicado' : 'Rascunho'}</span>
                         </div>
+                        ${p.cta_url ? '<p style="margin-top:0.4rem;font-size:0.8rem;color:var(--text-dim);"><i class="fas fa-external-link-alt"></i> ' + (p.cta_text || 'Link') + ': <span style="color:var(--primary);">' + p.cta_url + '</span></p>' : ''}
                     </div>
                     <div class="actions">
                         <button class="btn btn-secondary btn-sm" onclick="editBlogPost('${p.id}')"><i class="fas fa-edit"></i> Editar</button>
@@ -912,6 +928,8 @@
             document.getElementById('blogService').value = data?.service_slug || 'desenvolvimento-web';
             document.getElementById('blogImage').value = data?.image || '';
             document.getElementById('blogStatus').value = data?.status || 'published';
+            document.getElementById('blogCtaText').value = data?.cta_text || '';
+            document.getElementById('blogCtaUrl').value = data?.cta_url || '';
             document.getElementById('blogModalTitle').textContent = data?.id ? 'Editar Post' : 'Novo Post';
             toggleBlogServiceField();
             document.getElementById('blogModal').classList.add('active');
@@ -935,7 +953,9 @@
                 category: document.getElementById('blogCategory').value,
                 service_slug: document.getElementById('blogCategory').value === 'servicos' ? document.getElementById('blogService').value : null,
                 image: document.getElementById('blogImage').value,
-                status: document.getElementById('blogStatus').value
+                status: document.getElementById('blogStatus').value,
+                cta_text: document.getElementById('blogCtaText').value || null,
+                cta_url: document.getElementById('blogCtaUrl').value || null
             };
             if (!data.title) { toast('Erro', 'O título é obrigatório.'); return; }
             const editId = document.getElementById('blogEditId').value;

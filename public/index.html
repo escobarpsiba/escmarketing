@@ -1617,6 +1617,71 @@
             border-top-color: var(--primary); border-radius: 50%;
             animation: rotate 1s linear infinite; margin: 0 auto 1rem;
         }
+
+        /* Post Detail Modal */
+        .post-modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+            z-index: 9999; display: none; align-items: center; justify-content: center;
+            padding: 2rem; backdrop-filter: blur(6px);
+        }
+        .post-modal-overlay.active { display: flex; }
+        .post-modal {
+            background: var(--dark); border: 1px solid var(--glass-border); border-radius: 24px;
+            width: 100%; max-width: 720px; max-height: 90vh; overflow-y: auto;
+            position: relative;
+        }
+        .post-modal::-webkit-scrollbar { width: 6px; }
+        .post-modal::-webkit-scrollbar-track { background: var(--dark); }
+        .post-modal::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+        .post-modal .post-image {
+            width: 100%; height: 280px; object-fit: cover; display: block;
+            border-radius: 24px 24px 0 0;
+        }
+        .post-modal .post-body { padding: 2rem; }
+        .post-modal .post-body .post-tag {
+            display: inline-block; background: var(--gradient-1); padding: 0.3rem 0.8rem;
+            border-radius: 50px; font-size: 0.75rem; font-weight: 600; margin-bottom: 0.8rem;
+        }
+        .post-modal .post-body h2 {
+            font-family: 'Space Grotesk',sans-serif; font-size: 1.6rem;
+            margin-bottom: 0.5rem; line-height: 1.3;
+        }
+        .post-modal .post-body .post-date {
+            font-size: 0.85rem; color: var(--text-dim); margin-bottom: 1.5rem;
+        }
+        .post-modal .post-body .post-description {
+            color: var(--text-muted); font-size: 1rem; margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+        .post-modal .post-body .post-content {
+            color: var(--text); font-size: 0.95rem; line-height: 1.8;
+        }
+        .post-modal .post-body .post-content p { margin-bottom: 1rem; }
+        .post-modal .post-body .post-content h3 {
+            font-family: 'Space Grotesk',sans-serif; font-size: 1.2rem;
+            margin: 1.5rem 0 0.8rem;
+        }
+        .post-modal .post-body .post-content ul, .post-modal .post-body .post-content ol {
+            margin: 0.5rem 0 1rem 1.5rem; color: var(--text-muted);
+        }
+        .post-modal .post-body .post-content li { margin-bottom: 0.3rem; }
+        .post-modal .post-body .post-cta {
+            display: inline-flex; align-items: center; gap: 0.6rem;
+            background: var(--gradient-1); color: white; padding: 1rem 2rem;
+            border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 1rem;
+            margin-top: 1.5rem; transition: all 0.3s ease;
+        }
+        .post-modal .post-body .post-cta:hover {
+            transform: translateY(-3px); box-shadow: 0 15px 40px rgba(99,102,241,0.4);
+        }
+        .post-modal .post-close {
+            position: absolute; top: 1rem; right: 1rem;
+            background: var(--glass); border: none; color: white; width: 44px; height: 44px;
+            border-radius: 50%; cursor: pointer; font-size: 1.3rem; display: flex;
+            align-items: center; justify-content: center; transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+        .post-modal .post-close:hover { background: var(--primary); }
     </style>
 </head>
 <body>
@@ -2247,6 +2312,24 @@
         </div>
     </div>
 
+    <!-- Post Detail Modal -->
+    <div class="post-modal-overlay" id="postModal">
+        <div class="post-modal">
+            <button class="post-close" onclick="closePostModal()"><i class="fas fa-times"></i></button>
+            <img class="post-image" id="postImage" src="" alt="">
+            <div class="post-body">
+                <span class="post-tag" id="postTag">Projeto</span>
+                <h2 id="postTitle"></h2>
+                <div class="post-date" id="postDate"></div>
+                <div class="post-description" id="postDescription"></div>
+                <div class="post-content" id="postContent"></div>
+                <a class="post-cta" id="postCta" href="#" target="_blank" rel="noopener noreferrer" style="display:none;">
+                    <i class="fas fa-external-link-alt"></i> <span id="postCtaText">Ver Projeto</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast -->
     <div class="toast" id="toast">
         <div class="toast-icon"><i class="fas fa-check"></i></div>
@@ -2571,6 +2654,50 @@
             'design-branding': 'Design & Branding'
         };
 
+        let cachedPortfolioPosts = [];
+
+        // Post Detail Modal
+        async function openPostModal(id) {
+            let post = cachedPortfolioPosts.find(p => p.id === id);
+            if (!post) {
+                const posts = await SiteData.sbGetBlogPosts('portfolio');
+                if (posts) post = posts.find(p => p.id === id);
+            }
+            if (!post) return;
+
+            const modal = document.getElementById('postModal');
+            document.getElementById('postImage').src = post.image || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop';
+            document.getElementById('postImage').style.display = post.image ? 'block' : 'none';
+            document.getElementById('postTag').textContent = post.tag || post.category || 'Projeto';
+            document.getElementById('postTitle').textContent = post.title;
+            document.getElementById('postDate').textContent = post.created_at ? new Date(post.created_at).toLocaleDateString('pt-BR') : '';
+            document.getElementById('postDate').style.display = post.created_at ? 'block' : 'none';
+            document.getElementById('postDescription').textContent = post.description || '';
+            document.getElementById('postDescription').style.display = post.description ? 'block' : 'none';
+            document.getElementById('postContent').innerHTML = post.content || '<p style="color:var(--text-muted);">Conteúdo detalhado em breve.</p>';
+
+            const cta = document.getElementById('postCta');
+            if (post.cta_url) {
+                cta.href = post.cta_url;
+                document.getElementById('postCtaText').textContent = post.cta_text || 'Ver Projeto';
+                cta.style.display = 'inline-flex';
+            } else {
+                cta.style.display = 'none';
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePostModal() {
+            document.getElementById('postModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('postModal').addEventListener('click', function(e) {
+            if (e.target === this) closePostModal();
+        });
+
         // Dynamic content from SiteData
         async function loadDynamicContent() {
             const seo = await SiteData.sbGetSeo();
@@ -2589,18 +2716,19 @@
             let portfolioItems = portfolioPosts;
             if (!portfolioItems || portfolioItems.length === 0) {
                 portfolioItems = [
-                    { title: 'Loja Virtual Premium', tag: 'E-commerce', description: 'Plataforma de e-commerce com +300% de conversão', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop' },
-                    { title: 'Aplicativo de Delivery', tag: 'App Mobile', description: 'App nativo com 50k+ downloads em 3 meses', image: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=600&h=400&fit=crop' },
-                    { title: 'Dashboard Analytics', tag: 'SaaS', description: 'Sistema de BI com processamento em tempo real', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop' },
-                    { title: 'Campanha Digital', tag: 'Marketing', description: 'ROI de 450% em campanha de performance', image: 'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=600&h=400&fit=crop' },
-                    { title: 'Plataforma Financeira', tag: 'Fintech', description: 'Sistema bancário digital com segurança enterprise', image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop' },
-                    { title: 'Site Institucional', tag: 'Corporativo', description: 'Presença digital de marca Fortune 500', image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=600&h=400&fit=crop' }
+                    { id: 'fallback-1', title: 'Loja Virtual Premium', tag: 'E-commerce', description: 'Plataforma de e-commerce com +300% de conversão', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop' },
+                    { id: 'fallback-2', title: 'Aplicativo de Delivery', tag: 'App Mobile', description: 'App nativo com 50k+ downloads em 3 meses', image: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=600&h=400&fit=crop' },
+                    { id: 'fallback-3', title: 'Dashboard Analytics', tag: 'SaaS', description: 'Sistema de BI com processamento em tempo real', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop' },
+                    { id: 'fallback-4', title: 'Campanha Digital', tag: 'Marketing', description: 'ROI de 450% em campanha de performance', image: 'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=600&h=400&fit=crop' },
+                    { id: 'fallback-5', title: 'Plataforma Financeira', tag: 'Fintech', description: 'Sistema bancário digital com segurança enterprise', image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop' },
+                    { id: 'fallback-6', title: 'Site Institucional', tag: 'Corporativo', description: 'Presença digital de marca Fortune 500', image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=600&h=400&fit=crop' }
                 ];
             }
+            cachedPortfolioPosts = portfolioItems;
             if (grid) {
                 const variants = ['animate-zoom-in', 'animate-fade-up', 'animate-scale-in', 'animate-fade-left', 'animate-fade-right', 'animate-flip-up'];
                 grid.innerHTML = portfolioItems.map((item, i) => `
-                    <div class="portfolio-item animate-on-scroll ${variants[i % variants.length]}">
+                    <div class="portfolio-item animate-on-scroll ${variants[i % variants.length]}" onclick="openPostModal('${item.id}')" style="cursor:pointer;">
                         <img src="${item.image || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop'}" alt="${item.title}" onerror="this.src='https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop'">
                         <div class="portfolio-overlay">
                             <span class="portfolio-tag">${item.tag || 'Projeto'}</span>
