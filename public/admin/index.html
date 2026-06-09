@@ -758,8 +758,8 @@
 
         let previewItemId = null;
 
-        function openMediaPreview(id) {
-            const items = SiteData.getMedia();
+        async function openMediaPreview(id) {
+            const items = await SiteData.sbGetMedia();
             const item = items.find(m => m.id === id);
             if (!item) return;
             previewItemId = id;
@@ -774,8 +774,8 @@
             previewItemId = null;
         }
 
-        function copyMediaUrl() {
-            const items = SiteData.getMedia();
+        async function copyMediaUrl() {
+            const items = await SiteData.sbGetMedia();
             const item = items.find(m => m.id === previewItemId);
             if (!item) return;
             navigator.clipboard.writeText(item.data).then(() => {
