@@ -903,8 +903,10 @@
             };
             if (!data.title) { toast('Erro', 'O título é obrigatório.'); return; }
             const editId = document.getElementById('blogEditId').value;
+            const supabaseFields = { title: data.title, description: data.description, content: data.content, category: data.category, service_slug: data.service_slug, image: data.image, status: data.status };
             if (editId) {
-                await SiteData.sbUpdateBlogPost(editId, data);
+                await SiteData.sbUpdateBlogPost(editId, supabaseFields);
+                SiteData.updateBlogPost(editId, data);
                 toast('Post Atualizado!', 'O post foi atualizado com sucesso.');
             } else {
                 await SiteData.sbAddBlogPost(data);

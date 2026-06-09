@@ -240,7 +240,13 @@ const SiteData = {
     if (category) params.category = `eq.${category}`;
     try {
       const rows = await supabase.get('blog_posts', params);
-      if (rows) return rows.map(r => ({ id: r.id, title: r.title, description: r.description, content: r.content, category: r.category, service_slug: r.service_slug, image: r.image, cta_text: r.cta_text, cta_url: r.cta_url, status: r.status, created_at: r.created_at }));
+      if (rows) {
+        const localPosts = this.getBlogPosts();
+        return rows.map(r => {
+          const local = localPosts.find(l => l.id === r.id);
+          return { id: r.id, title: r.title, description: r.description, content: r.content, category: r.category, service_slug: r.service_slug, image: r.image, cta_text: local?.cta_text || r.cta_text, cta_url: local?.cta_url || r.cta_url, status: r.status, created_at: r.created_at };
+        });
+      }
       return null;
     } catch { return null; }
   },
@@ -248,7 +254,9 @@ const SiteData = {
     item.id = Date.now().toString(36);
     item.created_at = new Date().toISOString();
     try {
-      await supabase.post('blog_posts', item);
+      const safe = { ...item };
+      delete safe.cta_text; delete safe.cta_url;
+      await supabase.post('blog_posts', safe);
     } catch {
       const list = this.getBlogPosts();
       list.unshift(item);
@@ -259,7 +267,9 @@ const SiteData = {
   async sbUpdateBlogPost(id, data) {
     data.updated_at = new Date().toISOString();
     try {
-      await supabase.patch('blog_posts', data, 'id', id);
+      const safe = { ...data };
+      delete safe.cta_text; delete safe.cta_url;
+      await supabase.patch('blog_posts', safe, 'id', id);
     } catch {
       const list = this.getBlogPosts();
       const idx = list.findIndex(i => i.id === id);
