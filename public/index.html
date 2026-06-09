@@ -2340,8 +2340,8 @@
         <button class="toast-close" onclick="hideToast()"><i class="fas fa-times"></i></button>
     </div>
 
-    <script src="assets/js/supabase.js"></script>
-    <script src="assets/js/site-data.js"></script>
+    <script src="assets/js/supabase.js?v=5"></script>
+    <script src="assets/js/site-data.js?v=5"></script>
     <script>
         // Loader
         window.addEventListener('load', () => {
@@ -2623,10 +2623,12 @@
         });
 
         // Smooth scroll for anchor links with offset
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        document.querySelectorAll('a[href^="#"]:not(.post-cta)').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (!href || href === '#' || href.startsWith('http')) return;
                 e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
+                const target = document.querySelector(href);
                 if (target) {
                     const offset = 80;
                     const targetPosition = target.getBoundingClientRect().top + window.scrollY - offset;
@@ -2715,12 +2717,12 @@
             let portfolioItems = portfolioPosts;
             if (!portfolioItems || portfolioItems.length === 0) {
                 portfolioItems = [
-                    { id: 'fallback-1', title: 'Loja Virtual Premium', tag: 'E-commerce', description: 'Plataforma de e-commerce com +300% de conversão', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop' },
-                    { id: 'fallback-2', title: 'Aplicativo de Delivery', tag: 'App Mobile', description: 'App nativo com 50k+ downloads em 3 meses', image: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=600&h=400&fit=crop' },
-                    { id: 'fallback-3', title: 'Dashboard Analytics', tag: 'SaaS', description: 'Sistema de BI com processamento em tempo real', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop' },
-                    { id: 'fallback-4', title: 'Campanha Digital', tag: 'Marketing', description: 'ROI de 450% em campanha de performance', image: 'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=600&h=400&fit=crop' },
-                    { id: 'fallback-5', title: 'Plataforma Financeira', tag: 'Fintech', description: 'Sistema bancário digital com segurança enterprise', image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop' },
-                    { id: 'fallback-6', title: 'Site Institucional', tag: 'Corporativo', description: 'Presença digital de marca Fortune 500', image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=600&h=400&fit=crop' }
+                    { id: 'fallback-1', title: 'Loja Virtual Premium', tag: 'E-commerce', description: 'Plataforma de e-commerce com +300% de conversão', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop', cta_text: 'Ver Projeto', cta_url: '#' },
+                    { id: 'fallback-2', title: 'Aplicativo de Delivery', tag: 'App Mobile', description: 'App nativo com 50k+ downloads em 3 meses', image: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=600&h=400&fit=crop', cta_text: 'Ver Projeto', cta_url: '#' },
+                    { id: 'fallback-3', title: 'Dashboard Analytics', tag: 'SaaS', description: 'Sistema de BI com processamento em tempo real', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop', cta_text: 'Ver Projeto', cta_url: '#' },
+                    { id: 'fallback-4', title: 'Campanha Digital', tag: 'Marketing', description: 'ROI de 450% em campanha de performance', image: 'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=600&h=400&fit=crop', cta_text: 'Ver Projeto', cta_url: '#' },
+                    { id: 'fallback-5', title: 'Plataforma Financeira', tag: 'Fintech', description: 'Sistema bancário digital com segurança enterprise', image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop', cta_text: 'Ver Projeto', cta_url: '#' },
+                    { id: 'fallback-6', title: 'Site Institucional', tag: 'Corporativo', description: 'Presença digital de marca Fortune 500', image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=600&h=400&fit=crop', cta_text: 'Ver Projeto', cta_url: '#' }
                 ];
             }
             cachedPortfolioPosts = portfolioItems;

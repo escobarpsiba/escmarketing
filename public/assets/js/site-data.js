@@ -138,30 +138,14 @@ const SiteData = {
   },
   async sbAddMediaItem(item) {
     item.id = Date.now().toString(36);
-    const file = item.file;
     delete item.file;
-
-    if (file) {
-      const ext = file.name.split('.').pop().toLowerCase().replace(/[^a-z0-9]/g, '');
-      const path = `${item.id}.${ext || 'png'}`;
-      try {
-        const publicUrl = await supabase.uploadImage('media', path, file);
-        item.data = publicUrl;
-      } catch {
-        const list = this.getMedia();
-        list.unshift(item);
-        this.set('media', list);
-      }
-    }
 
     try {
       await supabase.post('media', item);
     } catch {
       const list = this.getMedia();
-      if (!list.find(l => l.id === item.id)) {
-        list.unshift(item);
-        this.set('media', list);
-      }
+      list.unshift(item);
+      this.set('media', list);
     }
     return item;
   },
@@ -260,10 +244,12 @@ const SiteData = {
       const rows = await supabase.get('blog_posts', params);
       if (rows && rows.length) {
         const localPosts = this.getBlogPosts();
-        return rows.map(r => {
+        const merged = rows.map(r => {
           const local = localPosts.find(l => l.id === r.id);
           return { id: r.id, title: r.title, description: r.description, content: r.content, category: r.category, service_slug: r.service_slug, image: r.image, cta_text: local?.cta_text || r.cta_text, cta_url: local?.cta_url || r.cta_url, status: r.status, created_at: r.created_at };
         });
+        this.setBlogPosts(merged);
+        return merged;
       }
       return this.getBlogPosts();
     } catch { return this.getBlogPosts(); }
@@ -271,43 +257,29 @@ const SiteData = {
   async sbAddBlogPost(item) {
     item.id = Date.now().toString(36);
     item.created_at = new Date().toISOString();
-    try {
-      const safe = { ...item };
-      delete safe.cta_text; delete safe.cta_url;
-      await supabase.post('blog_posts', safe);
-    } catch {
-      const list = this.getBlogPosts();
-      list.unshift(item);
-      this.set('blog_posts', list);
-    }
+    this.addBlogPost(item);
+    supabase.post('blog_posts', { ...item }).catch(() => {});
     return item;
   },
   async sbUpdateBlogPost(id, data) {
     data.updated_at = new Date().toISOString();
-    try {
-      const safe = { ...data };
-      delete safe.cta_text; delete safe.cta_url;
-      await supabase.patch('blog_posts', safe, 'id', id);
-    } catch {
-      const list = this.getBlogPosts();
-      const idx = list.findIndex(i => i.id === id);
-      if (idx > -1) { list[idx] = { ...list[idx], ...data }; this.set('blog_posts', list); }
-    }
+    this.updateBlogPost(id, data);
+    supabase.patch('blog_posts', { ...data }, 'id', id).catch(e => {
+      alert('ERRO Supabase PATCH: ' + e.message);
+    });
   },
   async sbDeleteBlogPost(id) {
-    try {
-      await supabase.delete('blog_posts', 'id', id);
-    } catch {
-      this.set('blog_posts', this.getBlogPosts().filter(p => p.id !== id));
-    }
+    const exists = this.getBlogPosts().some(p => p.id === id);
+    if (exists) this.deleteBlogPost(id);
+    supabase.delete('blog_posts', 'id', id).catch(() => {});
   },
 
   getBlogPosts() { return this.get('blog_posts') || []; },
   setBlogPosts(d) { this.set('blog_posts', d); },
   addBlogPost(item) {
     const list = this.getBlogPosts();
-    item.id = Date.now().toString(36);
-    item.created_at = new Date().toISOString();
+    if (!item.id) item.id = Date.now().toString(36);
+    if (!item.created_at) item.created_at = new Date().toISOString();
     list.unshift(item);
     this.set('blog_posts', list);
     return item;
@@ -316,7 +288,14 @@ const SiteData = {
     data.updated_at = new Date().toISOString();
     const list = this.getBlogPosts();
     const idx = list.findIndex(i => i.id === id);
-    if (idx > -1) { list[idx] = { ...list[idx], ...data }; this.set('blog_posts', list); }
+    if (idx > -1) {
+      list[idx] = { ...list[idx], ...data };
+    } else {
+      data.id = id;
+      data.created_at = data.created_at || new Date().toISOString();
+      list.unshift(data);
+    }
+    this.set('blog_posts', list);
   },
   deleteBlogPost(id) {
     this.set('blog_posts', this.getBlogPosts().filter(p => p.id !== id));

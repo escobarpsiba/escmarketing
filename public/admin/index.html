@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - ESC Marketing</title>
+        <title>Admin - ESC Marketing [V5]</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -600,8 +600,8 @@
         </div>
     </div>
 
-    <script src="../assets/js/supabase.js"></script>
-    <script src="../assets/js/site-data.js"></script>
+    <script src="../assets/js/supabase.js?v=5"></script>
+    <script src="../assets/js/site-data.js?v=5"></script>
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
     <script>
         const ADMIN_PASSWORD = 'esc2024';
@@ -768,7 +768,7 @@
                 if (!file.type.startsWith('image/')) { processed++; return; }
                 const reader = new FileReader();
                 reader.onload = async function(e) {
-                    await SiteData.sbAddMediaItem({ name: file.name, data: e.target.result, file: file });
+                    await SiteData.sbAddMediaItem({ name: file.name, data: e.target.result });
                     processed++;
                     if (processed === total) {
                         loadMedia();
@@ -998,13 +998,28 @@
             };
             if (!data.title) { toast('Erro', 'O título é obrigatório.'); return; }
             const editId = document.getElementById('blogEditId').value;
-            const supabaseFields = { title: data.title, description: data.description, content: data.content, category: data.category, service_slug: data.service_slug, image: data.image, status: data.status };
+            const supabaseFields = { title: data.title, description: data.description, content: data.content, category: data.category, service_slug: data.service_slug, image: data.image, status: data.status, cta_text: data.cta_text, cta_url: data.cta_url };
             if (editId) {
                 await SiteData.sbUpdateBlogPost(editId, supabaseFields);
                 SiteData.updateBlogPost(editId, data);
+                const lsKey = 'esc_marketing_blog_posts';
+                const raw = localStorage.getItem(lsKey);
+                let lsList = raw ? JSON.parse(raw) : [];
+                const lsIdx = lsList.findIndex(p => p.id === editId);
+                const entry = { ...data, id: editId, updated_at: new Date().toISOString() };
+                if (lsIdx > -1) { lsList[lsIdx] = { ...lsList[lsIdx], ...entry }; }
+                else { lsList.unshift(entry); }
+                localStorage.setItem(lsKey, JSON.stringify(lsList));
+                const saved = JSON.parse(localStorage.getItem(lsKey)).find(p => p.id === editId);
+                alert('DEBUG: cta_url salvo no localStorage = ' + (saved?.cta_url || 'VAZIO'));
                 toast('Post Atualizado!', 'O post foi atualizado com sucesso.');
             } else {
                 await SiteData.sbAddBlogPost(data);
+                const lsKey = 'esc_marketing_blog_posts';
+                const raw = localStorage.getItem(lsKey);
+                let lsList = raw ? JSON.parse(raw) : [];
+                lsList.unshift({ ...data, id: data.id || Date.now().toString(36), created_at: new Date().toISOString(), updated_at: new Date().toISOString() });
+                localStorage.setItem(lsKey, JSON.stringify(lsList));
                 toast('Post Criado!', 'Novo post adicionado com sucesso.');
             }
             closeBlogModal();
