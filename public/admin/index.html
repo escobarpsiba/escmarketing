@@ -271,7 +271,6 @@
             <nav class="sidebar-nav">
                 <button class="active" data-section="seo"><i class="fas fa-search"></i> <span>SEO</span></button>
                 <button data-section="blog"><i class="fas fa-blog"></i> <span>Blog</span></button>
-                <button data-section="portfolio"><i class="fas fa-images"></i> <span>Portfólio</span></button>
                 <button data-section="media"><i class="fas fa-photo-video"></i> <span>Mídia</span></button>
                 <button data-section="contacts"><i class="fas fa-envelope"></i> <span>Contatos</span></button>
                 <button data-section="social"><i class="fas fa-share-alt"></i> <span>Redes Sociais</span></button>
@@ -331,17 +330,6 @@
                         <p style="color:#bdc1c6;font-size:0.85rem;" id="previewDesc">Profissionais com mais de 15 anos de mercado unidos para criar soluções digitais de alto impacto.</p>
                     </div>
                 </div>
-            </section>
-
-            <section class="page-section" id="sec-portfolio">
-                <div class="page-header">
-                    <div>
-                        <h1>Portfólio</h1>
-                        <p>Gerencie os projetos exibidos no site</p>
-                    </div>
-                    <button class="btn btn-primary" onclick="openPortfolioModal()"><i class="fas fa-plus"></i> Novo Projeto</button>
-                </div>
-                <div id="portfolioList"></div>
             </section>
 
             <section class="page-section" id="sec-media">
@@ -437,42 +425,6 @@
             </section>
 
         </main>
-    </div>
-
-    <div class="modal-overlay" id="portfolioModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h2 id="portfolioModalTitle">Novo Projeto</h2>
-                <button class="modal-close" onclick="closePortfolioModal()"><i class="fas fa-times"></i></button>
-            </div>
-            <input type="hidden" id="portfolioEditId">
-            <div class="form-group">
-                <label>Título do Projeto</label>
-                <input type="text" id="pfTitle" placeholder="Ex: Loja Virtual Premium">
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Tag / Categoria</label>
-                    <input type="text" id="pfTag" placeholder="Ex: E-commerce">
-                </div>
-                <div class="form-group">
-                    <label>Resultado</label>
-                    <input type="text" id="pfResult" placeholder="Ex: +300% de conversão">
-                </div>
-            </div>
-            <div class="form-group">
-                <label>URL da Imagem</label>
-                <input type="url" id="pfImage" placeholder="https://images.unsplash.com/...">
-            </div>
-            <div class="form-group">
-                <label>Descrição</label>
-                <textarea id="pfDescription" rows="3" placeholder="Descrição do projeto"></textarea>
-            </div>
-            <div style="display:flex;gap:0.8rem;justify-content:flex-end;">
-                <button class="btn btn-secondary" onclick="closePortfolioModal()">Cancelar</button>
-                <button class="btn btn-primary" onclick="savePortfolioItem()"><i class="fas fa-check"></i> Salvar</button>
-            </div>
-        </div>
     </div>
 
     <div class="modal-overlay" id="blogModal">
@@ -598,7 +550,6 @@
         async function loadAll() {
             await Promise.all([
                 loadSeo(),
-                loadPortfolio(),
                 loadMedia(),
                 loadContacts(),
                 loadSocial()
@@ -638,79 +589,6 @@
                 ogImage: document.getElementById('seoOgImage').value
             });
             toast('SEO Salvo!', 'As configurações de SEO foram atualizadas.');
-        }
-
-        async function loadPortfolio() {
-            const items = await SiteData.sbGetPortfolio();
-            const container = document.getElementById('portfolioList');
-            if (!items.length) {
-                container.innerHTML = '<div class="card"><div class="empty-state"><i class="fas fa-folder-open"></i><p>Nenhum projeto no portfólio ainda. Clique em "Novo Projeto" para adicionar.</p></div></div>';
-                return;
-            }
-            container.innerHTML = '<div class="item-grid">' + items.map(item => `
-                <div class="item-card">
-                    <img src="${item.image || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop'}" alt="${item.title}" onerror="this.src='https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop'">
-                    <div class="body">
-                        <h4>${item.title}</h4>
-                        <p>${item.description || ''}</p>
-                        ${item.tag ? '<span class="tag">' + item.tag + '</span>' : ''}
-                        ${item.result ? '<p style="margin-top:0.5rem;color:var(--primary);font-size:0.8rem;font-weight:600;"><i class="fas fa-chart-line"></i> ' + item.result + '</p>' : ''}
-                    </div>
-                    <div class="actions">
-                        <button class="btn btn-secondary btn-sm" onclick="editPortfolioItem('${item.id}')"><i class="fas fa-edit"></i> Editar</button>
-                        <button class="btn btn-danger btn-sm" onclick="deletePortfolioItem('${item.id}')"><i class="fas fa-trash"></i> Excluir</button>
-                    </div>
-                </div>
-            `).join('') + '</div>';
-        }
-
-        function openPortfolioModal(data) {
-            document.getElementById('portfolioEditId').value = data?.id || '';
-            document.getElementById('pfTitle').value = data?.title || '';
-            document.getElementById('pfTag').value = data?.tag || '';
-            document.getElementById('pfResult').value = data?.result || '';
-            document.getElementById('pfImage').value = data?.image || '';
-            document.getElementById('pfDescription').value = data?.description || '';
-            document.getElementById('portfolioModalTitle').textContent = data?.id ? 'Editar Projeto' : 'Novo Projeto';
-            document.getElementById('portfolioModal').classList.add('active');
-        }
-
-        function closePortfolioModal() {
-            document.getElementById('portfolioModal').classList.remove('active');
-        }
-
-        async function editPortfolioItem(id) {
-            const items = await SiteData.sbGetPortfolio();
-            const item = items.find(i => i.id === id);
-            if (item) openPortfolioModal(item);
-        }
-
-        async function savePortfolioItem() {
-            const data = {
-                title: document.getElementById('pfTitle').value,
-                tag: document.getElementById('pfTag').value,
-                result: document.getElementById('pfResult').value,
-                image: document.getElementById('pfImage').value,
-                description: document.getElementById('pfDescription').value
-            };
-            const editId = document.getElementById('portfolioEditId').value;
-            if (editId) {
-                await SiteData.sbUpdatePortfolioItem(editId, data);
-                toast('Projeto Atualizado!', 'O projeto foi atualizado no portfólio.');
-            } else {
-                await SiteData.sbAddPortfolioItem(data);
-                toast('Projeto Adicionado!', 'Novo projeto adicionado ao portfólio.');
-            }
-            closePortfolioModal();
-            loadPortfolio();
-        }
-
-        async function deletePortfolioItem(id) {
-            if (confirm('Tem certeza que deseja excluir este projeto?')) {
-                await SiteData.sbDeletePortfolioItem(id);
-                toast('Projeto Excluído!', 'O projeto foi removido do portfólio.');
-                loadPortfolio();
-            }
         }
 
         async function loadContacts() {
@@ -984,7 +862,6 @@
             await Promise.all([
                 loadSeo(),
                 loadBlog(),
-                loadPortfolio(),
                 loadMedia(),
                 loadContacts(),
                 loadSocial()
