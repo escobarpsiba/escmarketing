@@ -761,22 +761,27 @@
             `).join('') + '</div>';
         }
 
-        function handleMediaUpload(files) {
+        async function handleMediaUpload(files) {
             const total = files.length;
             let processed = 0;
-            Array.from(files).forEach(file => {
-                if (!file.type.startsWith('image/')) { processed++; return; }
-                const reader = new FileReader();
-                reader.onload = async function(e) {
-                    await SiteData.sbAddMediaItem({ name: file.name, data: e.target.result });
-                    processed++;
-                    if (processed === total) {
-                        loadMedia();
-                        toast('Upload Concluído!', total + ' arquivo(s) enviado(s) com sucesso.');
-                    }
-                };
-                reader.readAsDataURL(file);
-            });
+            for (const file of Array.from(files)) {
+                if (!file.type.startsWith('image/')) { processed++; continue; }
+                try {
+                    const ext = file.name.split('.').pop() || 'png';
+                    const path = `media/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
+                    const url = await supabase.uploadImage('images', path, file);
+                    await SiteData.sbAddMediaItem({ name: file.name, data: url });
+                } catch {
+                    const reader = new FileReader();
+                    const data = await new Promise(resolve => { reader.onload = e => resolve(e.target.result); reader.readAsDataURL(file); });
+                    await SiteData.sbAddMediaItem({ name: file.name, data });
+                }
+                processed++;
+                if (processed === total) {
+                    loadMedia();
+                    toast('Upload Concluído!', total + ' arquivo(s) enviado(s) com sucesso.');
+                }
+            }
         }
 
         document.getElementById('fileInput').addEventListener('change', function(e) {
