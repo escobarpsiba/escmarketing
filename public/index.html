@@ -1568,6 +1568,55 @@
             font-size: 1rem;
             padding: 0.2rem;
         }
+
+        /* Service Modal */
+        .service-modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+            z-index: 9999; display: none; align-items: center; justify-content: center;
+            padding: 2rem; backdrop-filter: blur(4px);
+        }
+        .service-modal-overlay.active { display: flex; }
+        .service-modal {
+            background: var(--dark); border: 1px solid var(--glass-border); border-radius: 24px;
+            width: 100%; max-width: 800px; max-height: 90vh; overflow-y: auto;
+            padding: 2rem; position: relative;
+        }
+        .service-modal::-webkit-scrollbar { width: 6px; }
+        .service-modal::-webkit-scrollbar-track { background: var(--dark); }
+        .service-modal::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+        .service-modal .modal-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            margin-bottom: 2rem; padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .service-modal .modal-header h2 {
+            font-family: 'Space Grotesk',sans-serif; font-size: 1.5rem;
+        }
+        .service-modal .modal-header p { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.3rem; }
+        .service-modal .modal-close {
+            background: var(--glass); border: none; color: var(--text); width: 40px; height: 40px;
+            border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex;
+            align-items: center; justify-content: center; transition: all 0.3s; flex-shrink: 0;
+        }
+        .service-modal .modal-close:hover { background: var(--primary); }
+        .service-post { margin-bottom: 1.5rem; }
+        .service-post:not(:last-child) { padding-bottom: 1.5rem; border-bottom: 1px solid var(--glass-border); }
+        .service-post img {
+            width: 100%; border-radius: 12px; margin-bottom: 1rem; max-height: 300px; object-fit: cover;
+        }
+        .service-post h3 { font-family: 'Space Grotesk',sans-serif; font-size: 1.2rem; margin-bottom: 0.5rem; }
+        .service-post .meta { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 0.8rem; }
+        .service-post .content { color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; }
+        .service-post .content p { margin-bottom: 0.8rem; }
+        .service-post-empty { text-align: center; padding: 3rem; color: var(--text-dim); }
+        .service-post-empty i { font-size: 3rem; margin-bottom: 1rem; opacity: 0.3; display: block; }
+
+        .service-modal-loading { text-align: center; padding: 3rem; color: var(--text-muted); }
+        .service-modal-loading .spinner {
+            width: 40px; height: 40px; border: 3px solid var(--dark-light);
+            border-top-color: var(--primary); border-radius: 50%;
+            animation: rotate 1s linear infinite; margin: 0 auto 1rem;
+        }
     </style>
 </head>
 <body>
@@ -1708,7 +1757,7 @@
             <p>Unimos expertise de mercado a novas abordagens para oferecer serviços digitais que realmente entregam resultado.</p>
         </div>
         <div class="services-grid stagger-children">
-            <div class="service-card animate-on-scroll animate-fade-left">
+            <div class="service-card animate-on-scroll animate-fade-left" data-service="desenvolvimento-web">
                 <div class="service-icon"><i class="fas fa-laptop-code"></i></div>
                 <h3>Desenvolvimento Web</h3>
                 <p>Sites, landing pages e aplicações web com design moderno, performance otimizada e experiência do usuário excepcional.</p>
@@ -1718,10 +1767,10 @@
                     <li><i class="fas fa-check"></i> Sistemas Web Customizados</li>
                     <li><i class="fas fa-check"></i> APIs e Integrações</li>
                 </ul>
-                <a href="#contato" class="service-link">Saiba mais <i class="fas fa-arrow-right"></i></a>
+                <a href="javascript:void(0)" class="service-link" onclick="openServicePosts('desenvolvimento-web')">Saiba mais <i class="fas fa-arrow-right"></i></a>
             </div>
 
-            <div class="service-card animate-on-scroll animate-fade-right">
+            <div class="service-card animate-on-scroll animate-fade-right" data-service="marketing-digital">
                 <div class="service-icon"><i class="fas fa-bullhorn"></i></div>
                 <h3>Marketing Digital</h3>
                 <p>Estratégias de marketing data-driven para aumentar visibilidade, gerar leads qualificados e maximizar ROI.</p>
@@ -1731,9 +1780,9 @@
                     <li><i class="fas fa-check"></i> Email Marketing</li>
                     <li><i class="fas fa-check"></i> Analytics & BI</li>
                 </ul>
-                <a href="#contato" class="service-link">Saiba mais <i class="fas fa-arrow-right"></i></a>
+                <a href="javascript:void(0)" class="service-link" onclick="openServicePosts('marketing-digital')">Saiba mais <i class="fas fa-arrow-right"></i></a>
             </div>
-            <div class="service-card animate-on-scroll animate-scale-in">
+            <div class="service-card animate-on-scroll animate-scale-in" data-service="design-branding">
                 <div class="service-icon"><i class="fas fa-paint-brush"></i></div>
                 <h3>Design & Branding</h3>
                 <p>Identidade visual impactante e design centrado no usuário que comunica valores e diferencia sua marca.</p>
@@ -1743,7 +1792,7 @@
                     <li><i class="fas fa-check"></i> Motion Design</li>
                     <li><i class="fas fa-check"></i> Design System</li>
                 </ul>
-                <a href="#contato" class="service-link">Saiba mais <i class="fas fa-arrow-right"></i></a>
+                <a href="javascript:void(0)" class="service-link" onclick="openServicePosts('design-branding')">Saiba mais <i class="fas fa-arrow-right"></i></a>
             </div>
 
 
@@ -2179,6 +2228,25 @@
         </div>
     </footer>
 
+    <!-- Service Posts Modal -->
+    <div class="service-modal-overlay" id="serviceModal">
+        <div class="service-modal">
+            <div class="modal-header">
+                <div>
+                    <h2 id="serviceModalTitle">Posts sobre o Serviço</h2>
+                    <p id="serviceModalSubtitle">Confira nossos artigos e materiais sobre este serviço</p>
+                </div>
+                <button class="modal-close" onclick="closeServicePosts()"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="servicePostsContainer">
+                <div class="service-modal-loading">
+                    <div class="spinner"></div>
+                    <p>Carregando posts...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast -->
     <div class="toast" id="toast">
         <div class="toast-icon"><i class="fas fa-check"></i></div>
@@ -2428,6 +2496,49 @@
             }
         }
 
+        // Service Posts Modal
+        async function openServicePosts(slug) {
+            const modal = document.getElementById('serviceModal');
+            const container = document.getElementById('servicePostsContainer');
+            const title = document.getElementById('serviceModalTitle');
+            const subtitle = document.getElementById('serviceModalSubtitle');
+            const name = serviceNames[slug] || slug;
+
+            title.textContent = name;
+            subtitle.textContent = 'Confira nossos artigos e materiais sobre ' + name;
+            container.innerHTML = '<div class="service-modal-loading"><div class="spinner"></div><p>Carregando posts...</p></div>';
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            const posts = await SiteData.sbGetBlogPosts('servicos');
+            const filtered = posts ? posts.filter(p => p.service_slug === slug && p.status === 'published') : [];
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="service-post-empty"><i class="fas fa-file-alt"></i><p>Nenhum post publicado sobre ' + name + ' ainda.</p><p style="font-size:0.85rem;margin-top:0.5rem;">Em breve estaremos adicionando conteúdo sobre este serviço.</p></div>';
+                return;
+            }
+
+            container.innerHTML = filtered.map(p => `
+                <div class="service-post">
+                    ${p.image ? '<img src="' + p.image + '" alt="' + p.title + '" onerror="this.style.display=\'none\'">' : ''}
+                    <h3>${p.title}</h3>
+                    <div class="meta">${new Date(p.created_at).toLocaleDateString('pt-BR')}</div>
+                    ${p.description ? '<p style="color:var(--text-muted);margin-bottom:0.8rem;">' + p.description + '</p>' : ''}
+                    ${p.content ? '<div class="content">' + p.content + '</div>' : ''}
+                </div>
+            `).join('');
+        }
+
+        function closeServicePosts() {
+            document.getElementById('serviceModal').classList.remove('active');
+            document.getElementById('servicePostsContainer').innerHTML = '';
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('serviceModal').addEventListener('click', function(e) {
+            if (e.target === this) closeServicePosts();
+        });
+
         // Smooth scroll for anchor links with offset
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -2454,6 +2565,12 @@
             });
         });
 
+        const serviceNames = {
+            'desenvolvimento-web': 'Desenvolvimento Web',
+            'marketing-digital': 'Marketing Digital',
+            'design-branding': 'Design & Branding'
+        };
+
         // Dynamic content from SiteData
         async function loadDynamicContent() {
             const seo = await SiteData.sbGetSeo();
@@ -2467,10 +2584,11 @@
             const ogImage = document.querySelector('meta[property="og:image"]');
             if (ogImage) ogImage.setAttribute('content', seo.ogImage || 'assets/images/logo-esc.png');
 
-            let portfolio = await SiteData.sbGetPortfolio();
             const grid = document.getElementById('portfolioGrid');
-            if (portfolio.length === 0) {
-                portfolio = [
+            const portfolioPosts = await SiteData.sbGetBlogPosts('portfolio');
+            let portfolioItems = portfolioPosts;
+            if (!portfolioItems || portfolioItems.length === 0) {
+                portfolioItems = [
                     { title: 'Loja Virtual Premium', tag: 'E-commerce', description: 'Plataforma de e-commerce com +300% de conversão', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop' },
                     { title: 'Aplicativo de Delivery', tag: 'App Mobile', description: 'App nativo com 50k+ downloads em 3 meses', image: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=600&h=400&fit=crop' },
                     { title: 'Dashboard Analytics', tag: 'SaaS', description: 'Sistema de BI com processamento em tempo real', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop' },
@@ -2481,7 +2599,7 @@
             }
             if (grid) {
                 const variants = ['animate-zoom-in', 'animate-fade-up', 'animate-scale-in', 'animate-fade-left', 'animate-fade-right', 'animate-flip-up'];
-                grid.innerHTML = portfolio.map((item, i) => `
+                grid.innerHTML = portfolioItems.map((item, i) => `
                     <div class="portfolio-item animate-on-scroll ${variants[i % variants.length]}">
                         <img src="${item.image || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop'}" alt="${item.title}" onerror="this.src='https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop'">
                         <div class="portfolio-overlay">

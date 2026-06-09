@@ -270,6 +270,7 @@
             <a href="../index.html" class="logo"><img src="../assets/images/logo-esc.png" alt="ESC Marketing"></a>
             <nav class="sidebar-nav">
                 <button class="active" data-section="seo"><i class="fas fa-search"></i> <span>SEO</span></button>
+                <button data-section="blog"><i class="fas fa-blog"></i> <span>Blog</span></button>
                 <button data-section="portfolio"><i class="fas fa-images"></i> <span>Portfólio</span></button>
                 <button data-section="media"><i class="fas fa-photo-video"></i> <span>Mídia</span></button>
                 <button data-section="contacts"><i class="fas fa-envelope"></i> <span>Contatos</span></button>
@@ -281,6 +282,24 @@
         </aside>
 
         <main class="main-content">
+
+            <section class="page-section" id="sec-blog">
+                <div class="page-header">
+                    <div>
+                        <h1>Blog</h1>
+                        <p>Gerencie os posts do blog que alimentam o portfólio e os serviços</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openBlogModal()"><i class="fas fa-plus"></i> Novo Post</button>
+                </div>
+                <div class="card" style="padding:0.8rem 1.5rem;margin-bottom:1rem;">
+                    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;" id="blogFilterTabs">
+                        <button class="btn btn-sm btn-primary" data-category="" onclick="loadBlog('')">Todos</button>
+                        <button class="btn btn-sm btn-secondary" data-category="portfolio" onclick="loadBlog('portfolio')">Portfólio</button>
+                        <button class="btn btn-sm btn-secondary" data-category="servicos" onclick="loadBlog('servicos')">Serviços</button>
+                    </div>
+                </div>
+                <div id="blogList"></div>
+            </section>
 
             <section class="page-section active" id="sec-seo">
                 <div class="page-header">
@@ -452,6 +471,62 @@
             <div style="display:flex;gap:0.8rem;justify-content:flex-end;">
                 <button class="btn btn-secondary" onclick="closePortfolioModal()">Cancelar</button>
                 <button class="btn btn-primary" onclick="savePortfolioItem()"><i class="fas fa-check"></i> Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="blogModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="blogModalTitle">Novo Post</h2>
+                <button class="modal-close" onclick="closeBlogModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <input type="hidden" id="blogEditId">
+            <div class="form-group">
+                <label>Título do Post</label>
+                <input type="text" id="blogTitle" placeholder="Ex: Como criar um e-commerce de sucesso">
+            </div>
+            <div class="form-group">
+                <label>Descrição / Resumo</label>
+                <textarea id="blogDescription" rows="3" placeholder="Breve descrição do post"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Conteúdo (HTML)</label>
+                <textarea id="blogContent" rows="10" placeholder="Conteúdo completo em HTML do post..."></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Categoria</label>
+                    <select id="blogCategory" onchange="toggleBlogServiceField()">
+                        <option value="portfolio">Portfólio</option>
+                        <option value="servicos">Serviços</option>
+                    </select>
+                </div>
+                <div class="form-group" id="blogServiceGroup">
+                    <label>Serviço Relacionado</label>
+                    <select id="blogService">
+                        <option value="desenvolvimento-web">Desenvolvimento Web</option>
+                        <option value="marketing-digital">Marketing Digital</option>
+                        <option value="design-branding">Design & Branding</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>URL da Imagem</label>
+                    <input type="url" id="blogImage" placeholder="https://images.unsplash.com/...">
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="blogStatus">
+                        <option value="published">Publicado</option>
+                        <option value="draft">Rascunho</option>
+                    </select>
+                </div>
+            </div>
+            <div style="display:flex;gap:0.8rem;justify-content:flex-end;">
+                <button class="btn btn-secondary" onclick="closeBlogModal()">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveBlogPost()"><i class="fas fa-check"></i> Salvar</button>
             </div>
         </div>
     </div>
@@ -785,6 +860,116 @@
                 loadMedia();
             }
         }
+
+        // Blog functions
+        let blogCategoryFilter = '';
+
+        async function loadBlog(category) {
+            blogCategoryFilter = category || '';
+            const params = category ? { category } : {};
+            const posts = await SiteData.sbGetBlogPosts(blogCategoryFilter || undefined);
+            const container = document.getElementById('blogList');
+
+            document.querySelectorAll('#blogFilterTabs .btn').forEach(b => {
+                b.className = 'btn btn-sm ' + (b.dataset.category === (category || '') ? 'btn-primary' : 'btn-secondary');
+            });
+
+            if (!posts || !posts.length) {
+                container.innerHTML = '<div class="card"><div class="empty-state"><i class="fas fa-blog"></i><p>Nenhum post encontrado. Clique em "Novo Post" para criar.</p></div></div>';
+                return;
+            }
+            container.innerHTML = '<div class="item-grid">' + posts.map(p => `
+                <div class="item-card">
+                    ${p.image ? '<img src="' + p.image + '" alt="' + p.title + '" onerror="this.style.display=\'none\'">' : ''}
+                    <div class="body">
+                        <h4>${p.title}</h4>
+                        <p>${(p.description || '').substring(0, 100)}${(p.description || '').length > 100 ? '...' : ''}</p>
+                        <div style="display:flex;gap:0.4rem;margin-top:0.5rem;flex-wrap:wrap;">
+                            <span class="tag" style="font-size:0.7rem;">${p.category === 'portfolio' ? '📁 Portfólio' : '🔧 Serviços'}</span>
+                            ${p.service_slug ? '<span class="tag" style="font-size:0.7rem;background:var(--gradient-2);">' + p.service_slug.replace('desenvolvimento-web','Desenv. Web').replace('marketing-digital','Mkt Digital').replace('design-branding','Design & Branding') + '</span>' : ''}
+                            <span class="badge ${p.status === 'published' ? 'badge-success' : ''}" style="${p.status !== 'published' ? 'background:rgba(251,191,36,0.15);color:#fbbf24;' : ''}">${p.status === 'published' ? 'Publicado' : 'Rascunho'}</span>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-secondary btn-sm" onclick="editBlogPost('${p.id}')"><i class="fas fa-edit"></i> Editar</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteBlogPost('${p.id}')"><i class="fas fa-trash"></i> Excluir</button>
+                    </div>
+                </div>
+            `).join('') + '</div>';
+        }
+
+        function toggleBlogServiceField() {
+            const cat = document.getElementById('blogCategory').value;
+            document.getElementById('blogServiceGroup').style.display = cat === 'servicos' ? 'block' : 'none';
+        }
+
+        function openBlogModal(data) {
+            document.getElementById('blogEditId').value = data?.id || '';
+            document.getElementById('blogTitle').value = data?.title || '';
+            document.getElementById('blogDescription').value = data?.description || '';
+            document.getElementById('blogContent').value = data?.content || '';
+            document.getElementById('blogCategory').value = data?.category || 'portfolio';
+            document.getElementById('blogService').value = data?.service_slug || 'desenvolvimento-web';
+            document.getElementById('blogImage').value = data?.image || '';
+            document.getElementById('blogStatus').value = data?.status || 'published';
+            document.getElementById('blogModalTitle').textContent = data?.id ? 'Editar Post' : 'Novo Post';
+            toggleBlogServiceField();
+            document.getElementById('blogModal').classList.add('active');
+        }
+
+        function closeBlogModal() {
+            document.getElementById('blogModal').classList.remove('active');
+        }
+
+        async function editBlogPost(id) {
+            const posts = await SiteData.sbGetBlogPosts();
+            const post = posts.find(p => p.id === id);
+            if (post) openBlogModal(post);
+        }
+
+        async function saveBlogPost() {
+            const data = {
+                title: document.getElementById('blogTitle').value,
+                description: document.getElementById('blogDescription').value,
+                content: document.getElementById('blogContent').value,
+                category: document.getElementById('blogCategory').value,
+                service_slug: document.getElementById('blogCategory').value === 'servicos' ? document.getElementById('blogService').value : null,
+                image: document.getElementById('blogImage').value,
+                status: document.getElementById('blogStatus').value
+            };
+            if (!data.title) { toast('Erro', 'O título é obrigatório.'); return; }
+            const editId = document.getElementById('blogEditId').value;
+            if (editId) {
+                await SiteData.sbUpdateBlogPost(editId, data);
+                toast('Post Atualizado!', 'O post foi atualizado com sucesso.');
+            } else {
+                await SiteData.sbAddBlogPost(data);
+                toast('Post Criado!', 'Novo post adicionado com sucesso.');
+            }
+            closeBlogModal();
+            loadBlog(blogCategoryFilter);
+        }
+
+        async function deleteBlogPost(id) {
+            if (confirm('Tem certeza que deseja excluir este post?')) {
+                await SiteData.sbDeleteBlogPost(id);
+                toast('Post Excluído!', 'O post foi removido.');
+                loadBlog(blogCategoryFilter);
+            }
+        }
+
+        // Update loadAll to include blog
+        const origLoadAll = loadAll;
+        loadAll = async function() {
+            await Promise.all([
+                loadSeo(),
+                loadBlog(),
+                loadPortfolio(),
+                loadMedia(),
+                loadContacts(),
+                loadSocial()
+            ]);
+        };
     </script>
 </body>
 </html>

@@ -233,5 +233,64 @@ const SiteData = {
   },
   deleteContact(id) {
     this.set('contacts', this.getContacts().filter(c => c.id !== id));
+  },
+
+  async sbGetBlogPosts(category) {
+    const params = { select: '*', order: 'created_at.desc' };
+    if (category) params.category = `eq.${category}`;
+    try {
+      const rows = await supabase.get('blog_posts', params);
+      if (rows) return rows.map(r => ({ id: r.id, title: r.title, description: r.description, content: r.content, category: r.category, service_slug: r.service_slug, image: r.image, status: r.status, created_at: r.created_at }));
+      return null;
+    } catch { return null; }
+  },
+  async sbAddBlogPost(item) {
+    item.id = Date.now().toString(36);
+    item.created_at = new Date().toISOString();
+    try {
+      await supabase.post('blog_posts', item);
+    } catch {
+      const list = this.getBlogPosts();
+      list.unshift(item);
+      this.set('blog_posts', list);
+    }
+    return item;
+  },
+  async sbUpdateBlogPost(id, data) {
+    data.updated_at = new Date().toISOString();
+    try {
+      await supabase.patch('blog_posts', data, 'id', id);
+    } catch {
+      const list = this.getBlogPosts();
+      const idx = list.findIndex(i => i.id === id);
+      if (idx > -1) { list[idx] = { ...list[idx], ...data }; this.set('blog_posts', list); }
+    }
+  },
+  async sbDeleteBlogPost(id) {
+    try {
+      await supabase.delete('blog_posts', 'id', id);
+    } catch {
+      this.set('blog_posts', this.getBlogPosts().filter(p => p.id !== id));
+    }
+  },
+
+  getBlogPosts() { return this.get('blog_posts') || []; },
+  setBlogPosts(d) { this.set('blog_posts', d); },
+  addBlogPost(item) {
+    const list = this.getBlogPosts();
+    item.id = Date.now().toString(36);
+    item.created_at = new Date().toISOString();
+    list.unshift(item);
+    this.set('blog_posts', list);
+    return item;
+  },
+  updateBlogPost(id, data) {
+    data.updated_at = new Date().toISOString();
+    const list = this.getBlogPosts();
+    const idx = list.findIndex(i => i.id === id);
+    if (idx > -1) { list[idx] = { ...list[idx], ...data }; this.set('blog_posts', list); }
+  },
+  deleteBlogPost(id) {
+    this.set('blog_posts', this.getBlogPosts().filter(p => p.id !== id));
   }
 };
