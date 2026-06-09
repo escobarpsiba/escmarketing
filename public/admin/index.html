@@ -372,7 +372,7 @@
                     <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
                         <i class="fas fa-cloud-upload-alt"></i>
                         <h3>Clique para fazer upload</h3>
-                        <p>Arraste ou selecione imagens (JPG, PNG, WebP, GIF)</p>
+                        <p>Arraste, selecione ou cole imagens (JPG, PNG, WebP, GIF)</p>
                         <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp,image/gif" multiple hidden>
                     </div>
                 </div>
@@ -741,6 +741,19 @@
             this.style.borderColor = 'var(--dark-lighter)';
             this.style.background = 'var(--dark)';
             if (e.dataTransfer.files.length) handleMediaUpload(e.dataTransfer.files);
+        });
+
+        // Paste image from clipboard
+        document.addEventListener('paste', function(e) {
+            const items = e.clipboardData?.items;
+            if (!items) return;
+            for (const item of items) {
+                if (item.type.startsWith('image/')) {
+                    const file = item.getAsFile();
+                    if (file) { handleMediaUpload([file]); toast('Upload', 'Imagem colada da área de transferência.'); }
+                    break;
+                }
+            }
         });
 
         let previewItemId = null;
