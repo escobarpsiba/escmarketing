@@ -207,19 +207,64 @@
             display:none; align-items:center; justify-content:center; padding:2rem;
         }
         .media-preview.active { display:flex; }
-        .media-preview img { max-width:90%; max-height:90%; border-radius:12px; object-fit:contain; }
-        .media-preview .close-preview {
-            position:absolute; top:2rem; right:2rem; background:var(--glass); border:none;
-            color:white; width:50px; height:50px; border-radius:50%; cursor:pointer; font-size:1.5rem;
-            display:flex; align-items:center; justify-content:center; transition:all 0.3s;
+        .media-preview .preview-container {
+            background:var(--dark); border:1px solid var(--glass-border); border-radius:20px;
+            max-width:800px; width:100%; max-height:90vh; overflow-y:auto;
+            display:flex; flex-direction:column;
         }
-        .media-preview .close-preview:hover { background:var(--primary); }
-        .media-preview .copy-url-btn {
-            position:absolute; bottom:2rem; background:var(--gradient-1); border:none;
-            color:white; padding:1rem 2rem; border-radius:12px; font-weight:600; cursor:pointer; font-size:1rem;
-            transition:all 0.3s; font-family:'Inter',sans-serif;
+        .media-preview .preview-header {
+            display:flex; justify-content:space-between; align-items:center;
+            padding:1.25rem 1.5rem; border-bottom:1px solid var(--glass-border);
         }
-        .media-preview .copy-url-btn:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(99,102,241,0.4); }
+        .media-preview .preview-header h3 {
+            font-family:'Space Grotesk',sans-serif; font-size:1.1rem; color:var(--text);
+        }
+        .media-preview .preview-header button {
+            background:none; border:none; color:var(--text-dim); cursor:pointer;
+            font-size:1.2rem; transition:color 0.3s; padding:0.25rem;
+        }
+        .media-preview .preview-header button:hover { color:var(--text); }
+        .media-preview .preview-body {
+            padding:1.5rem; display:flex; flex-direction:column; align-items:center; gap:1rem;
+        }
+        .media-preview .preview-body img {
+            width:100%; max-height:400px; object-fit:contain; border-radius:12px;
+        }
+        .media-preview .preview-actions {
+            display:flex; gap:0.75rem; width:100%; padding:0 1.5rem 1.5rem;
+            align-items:center;
+        }
+        .media-preview .url-field {
+            flex:1; display:flex; align-items:center; gap:0.5rem;
+            background:var(--dark-light); border:1px solid var(--glass-border);
+            border-radius:10px; padding:0.4rem 0.75rem;
+        }
+        .media-preview .url-field input {
+            flex:1; background:none; border:none; color:var(--text-muted);
+            font-family:'Inter',sans-serif; font-size:0.85rem; outline:none;
+            text-overflow:ellipsis; white-space:nowrap; overflow:hidden;
+        }
+        .media-preview .url-field button {
+            background:none; border:none; color:var(--primary); cursor:pointer;
+            font-size:1.1rem; padding:0.25rem; transition:color 0.3s;
+        }
+        .media-preview .url-field button:hover { color:var(--accent); }
+        .media-preview .url-field button.copied { color:var(--accent); }
+        .media-preview .btn-copy-url {
+            background:var(--gradient-1); border:none; color:white;
+            padding:0.7rem 1.25rem; border-radius:10px; font-weight:600; cursor:pointer;
+            font-size:0.9rem; transition:all 0.3s; font-family:'Inter',sans-serif;
+            white-space:nowrap; display:flex; align-items:center; gap:0.5rem;
+        }
+        .media-preview .btn-copy-url:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(99,102,241,0.4); }
+        .media-preview .btn-copy-url.copied { background:var(--accent); }
+        .media-preview .btn-delete {
+            background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); color:#ef4444;
+            padding:0.7rem 1rem; border-radius:10px; font-weight:600; cursor:pointer;
+            font-size:0.9rem; transition:all 0.3s; font-family:'Inter',sans-serif;
+            white-space:nowrap; display:flex; align-items:center; gap:0.5rem;
+        }
+        .media-preview .btn-delete:hover { background:rgba(239,68,68,0.25); }
 
         .modal-overlay {
             position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9998;
@@ -526,10 +571,24 @@
         </div>
     </div>
 
-    <div class="media-preview" id="mediaPreview" onclick="closeMediaPreview(event)">
-        <button class="close-preview" onclick="closeMediaPreview()"><i class="fas fa-times"></i></button>
-        <img id="previewImage" src="" alt="Preview">
-        <button class="copy-url-btn" onclick="copyMediaUrl()"><i class="fas fa-link"></i> Copiar URL</button>
+    <div class="media-preview" id="mediaPreview" onclick="if(event.target===this)closeMediaPreview()">
+        <div class="preview-container">
+            <div class="preview-header">
+                <h3><i class="fas fa-image" style="margin-right:0.5rem;color:var(--primary)"></i><span id="previewName">Visualizar</span></h3>
+                <button onclick="closeMediaPreview()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="preview-body">
+                <img id="previewImage" src="" alt="Preview">
+            </div>
+            <div class="preview-actions">
+                <div class="url-field">
+                    <input id="previewUrl" type="text" readonly onclick="this.select()">
+                    <button id="urlCopyIcon" onclick="copyMediaUrlField()" title="Copiar link"><i class="fas fa-copy"></i></button>
+                </div>
+                <button class="btn-copy-url" id="copyUrlBtn" onclick="copyMediaUrlBtn()"><i class="fas fa-link"></i> Copiar</button>
+                <button class="btn-delete" onclick="deleteMediaFromPreview()"><i class="fas fa-trash"></i></button>
+            </div>
+        </div>
     </div>
 
     <div class="toast" id="toast">
@@ -763,29 +822,51 @@
             const item = items.find(m => m.id === id);
             if (!item) return;
             previewItemId = id;
+            document.getElementById('previewName').textContent = item.name || 'Visualizar';
             document.getElementById('previewImage').src = item.data;
+            document.getElementById('previewUrl').value = item.data;
             document.getElementById('mediaPreview').classList.add('active');
         }
 
-        function closeMediaPreview(e) {
-            if (e && e.target !== e.currentTarget) return;
+        function closeMediaPreview() {
             document.getElementById('mediaPreview').classList.remove('active');
             document.getElementById('previewImage').src = '';
+            document.getElementById('previewUrl').value = '';
             previewItemId = null;
         }
 
-        async function copyMediaUrl() {
+        async function copyMediaUrlShared(btn) {
             const items = await SiteData.sbGetMedia();
             const item = items.find(m => m.id === previewItemId);
             if (!item) return;
-            navigator.clipboard.writeText(item.data).then(() => {
-                const badge = document.getElementById('copied-' + previewItemId);
-                if (badge) {
-                    badge.classList.add('show');
-                    setTimeout(() => badge.classList.remove('show'), 2000);
-                }
-                toast('URL Copiada!', 'O link da imagem foi copiado para a área de transferência.');
-            });
+            try {
+                await navigator.clipboard.writeText(item.data);
+                btn.classList.add('copied');
+                const orig = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+                setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = orig; }, 2000);
+                toast('URL Copiada!', 'Link da imagem copiado.');
+            } catch { toast('Erro', 'Não foi possível copiar.'); }
+        }
+
+        function copyMediaUrlField() {
+            const btn = document.getElementById('urlCopyIcon');
+            copyMediaUrlShared(btn);
+        }
+
+        function copyMediaUrlBtn() {
+            const btn = document.getElementById('copyUrlBtn');
+            copyMediaUrlShared(btn);
+        }
+
+        async function deleteMediaFromPreview() {
+            if (!previewItemId) return;
+            if (confirm('Excluir esta imagem?')) {
+                await SiteData.sbDeleteMediaItem(previewItemId);
+                closeMediaPreview();
+                toast('Mídia Excluída!', 'A imagem foi removida da biblioteca.');
+                loadMedia();
+            }
         }
 
         async function deleteMediaItem(id) {
