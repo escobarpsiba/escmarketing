@@ -44,13 +44,14 @@ const supabase = {
       headers: {
         'apikey': this.anonKey,
         'Authorization': `Bearer ${this.anonKey}`,
-        'Content-Type': file.type || 'application/octet-stream'
+        'Content-Type': file.type || 'application/octet-stream',
+        'x-upsert': 'true'
       },
       body: file
     });
     if (!res.ok) {
       const text = await res.text();
-      throw new Error(`Storage upload failed: ${res.status} ${text || res.statusText}`);
+      throw new Error(`Storage upload to bucket "${bucket}" failed (${res.status}): ${text}`);
     }
     return `${this.url}/storage/v1/object/public/${bucket}/${path}`;
   },
