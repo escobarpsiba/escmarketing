@@ -240,7 +240,7 @@ const SiteData = {
     if (category) params.category = `eq.${category}`;
     try {
       const rows = await supabase.get('blog_posts', params);
-      if (rows) return rows.map(r => ({ id: r.id, title: r.title, description: r.description, content: r.content, category: r.category, service_slug: r.service_slug, image: r.image, status: r.status, created_at: r.created_at }));
+      if (rows) return rows.map(r => ({ id: r.id, title: r.title, description: r.description, content: r.content, category: r.category, service_slug: r.service_slug, image: r.image, cta_text: r.cta_text, cta_url: r.cta_url, status: r.status, created_at: r.created_at }));
       return null;
     } catch { return null; }
   },

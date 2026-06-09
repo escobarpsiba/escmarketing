@@ -2731,7 +2731,7 @@
                     <div class="portfolio-item animate-on-scroll ${variants[i % variants.length]}" onclick="openPostModal('${item.id}')" style="cursor:pointer;">
                         <img src="${item.image || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop'}" alt="${item.title}" onerror="this.src='https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop'">
                         <div class="portfolio-overlay">
-                            <span class="portfolio-tag">${item.tag || 'Projeto'}</span>
+                            <span class="portfolio-tag">${item.tag || (item.category === 'portfolio' ? 'Portfólio' : item.category === 'servicos' ? 'Serviços' : 'Projeto')}</span>
                             <h3>${item.title}</h3>
                             ${item.description ? '<p>' + item.description + '</p>' : ''}
                             ${item.result ? '<p style="margin-top:0.3rem;color:var(--primary);font-size:0.85rem;font-weight:600;"><i class="fas fa-chart-line"></i> ' + item.result + '</p>' : ''}
