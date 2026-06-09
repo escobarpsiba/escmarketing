@@ -347,6 +347,7 @@
                 <button class="active" data-section="seo"><i class="fas fa-search"></i> <span>SEO</span></button>
                 <button data-section="blog"><i class="fas fa-blog"></i> <span>Blog</span></button>
                 <button data-section="media"><i class="fas fa-photo-video"></i> <span>Mídia</span></button>
+                <button data-section="testimonials"><i class="fas fa-comment-dots"></i> <span>Testemunhos</span></button>
                 <button data-section="contacts"><i class="fas fa-envelope"></i> <span>Contatos</span></button>
                 <button data-section="social"><i class="fas fa-share-alt"></i> <span>Redes Sociais</span></button>
             </nav>
@@ -423,6 +424,17 @@
                     </div>
                 </div>
                 <div id="mediaGrid"></div>
+            </section>
+
+            <section class="page-section" id="sec-testimonials">
+                <div class="page-header">
+                    <div>
+                        <h1>Testemunhos</h1>
+                        <p>Gerencie os depoimentos de clientes exibidos no site</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openTestimonialModal()"><i class="fas fa-plus"></i> Novo Depoimento</button>
+                </div>
+                <div id="testimonialsList"></div>
             </section>
 
             <section class="page-section" id="sec-contacts">
@@ -568,6 +580,48 @@
             <div style="display:flex;gap:0.8rem;justify-content:flex-end;">
                 <button class="btn btn-secondary" onclick="closeBlogModal()">Cancelar</button>
                 <button class="btn btn-primary" onclick="saveBlogPost()"><i class="fas fa-check"></i> Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="testimonialModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="testimonialModalTitle">Novo Depoimento</h2>
+                <button class="modal-close" onclick="closeTestimonialModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <input type="hidden" id="testimonialEditId">
+            <div class="form-group">
+                <label>Nome do Cliente</label>
+                <input type="text" id="testimonialName" placeholder="Ex: Carlos Andrade">
+            </div>
+            <div class="form-group">
+                <label>Empresa / Cargo</label>
+                <input type="text" id="testimonialCompany" placeholder="Ex: CEO, TechNova">
+            </div>
+            <div class="form-group">
+                <label>Depoimento</label>
+                <textarea id="testimonialText" rows="4" placeholder="Texto do depoimento..."></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nota (estrelas)</label>
+                    <select id="testimonialRating">
+                        <option value="5">5 ★</option>
+                        <option value="4">4 ★</option>
+                        <option value="3">3 ★</option>
+                        <option value="2">2 ★</option>
+                        <option value="1">1 ★</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Iniciais do Avatar</label>
+                    <input type="text" id="testimonialInitials" placeholder="Ex: CA" maxlength="4" style="text-transform:uppercase;">
+                </div>
+            </div>
+            <div style="display:flex;gap:0.8rem;justify-content:flex-end;">
+                <button class="btn btn-secondary" onclick="closeTestimonialModal()">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveTestimonial()"><i class="fas fa-check"></i> Salvar</button>
             </div>
         </div>
     </div>
@@ -1040,13 +1094,91 @@
             }
         }
 
-        // Update loadAll to include blog
+        // Testimonials CRUD
+        async function loadTestimonials() {
+            const items = await SiteData.sbGetTestimonials();
+            const container = document.getElementById('testimonialsList');
+            if (!items || !items.length) {
+                container.innerHTML = '<div class="card"><div class="empty-state"><i class="fas fa-comment-dots"></i><p>Nenhum depoimento cadastrado. Clique em "Novo Depoimento" para adicionar.</p></div></div>';
+                return;
+            }
+            container.innerHTML = '<div class="item-grid">' + items.map(t => `
+                <div class="item-card">
+                    <div class="body">
+                        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.8rem;">
+                            <div style="width:48px;height:48px;border-radius:50%;background:var(--gradient-1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;flex-shrink:0;">${t.avatar_initials || '?'}</div>
+                            <div>
+                                <h4 style="margin:0;">${t.name}</h4>
+                                <p style="font-size:0.85rem;color:var(--text-muted);margin:0;">${t.company || ''}</p>
+                            </div>
+                        </div>
+                        <p style="font-style:italic;color:var(--text);line-height:1.6;">"${t.text}"</p>
+                        <div style="color:#fbbf24;margin-top:0.5rem;font-size:0.9rem;">${'★'.repeat(parseInt(t.rating) || 5)}${'☆'.repeat(5 - (parseInt(t.rating) || 5))}</div>
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-secondary btn-sm" onclick="editTestimonial('${t.id}')"><i class="fas fa-edit"></i> Editar</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteTestimonial('${t.id}')"><i class="fas fa-trash"></i> Excluir</button>
+                    </div>
+                </div>
+            `).join('') + '</div>';
+        }
+
+        function openTestimonialModal(data) {
+            document.getElementById('testimonialEditId').value = data?.id || '';
+            document.getElementById('testimonialName').value = data?.name || '';
+            document.getElementById('testimonialCompany').value = data?.company || '';
+            document.getElementById('testimonialText').value = data?.text || '';
+            document.getElementById('testimonialRating').value = data?.rating || '5';
+            document.getElementById('testimonialInitials').value = data?.avatar_initials || '';
+            document.getElementById('testimonialModalTitle').textContent = data?.id ? 'Editar Depoimento' : 'Novo Depoimento';
+            document.getElementById('testimonialModal').classList.add('active');
+        }
+
+        function closeTestimonialModal() {
+            document.getElementById('testimonialModal').classList.remove('active');
+        }
+
+        async function editTestimonial(id) {
+            const items = await SiteData.sbGetTestimonials();
+            const item = items.find(t => t.id === id);
+            if (item) openTestimonialModal(item);
+        }
+
+        async function saveTestimonial() {
+            const data = {
+                name: document.getElementById('testimonialName').value,
+                company: document.getElementById('testimonialCompany').value,
+                text: document.getElementById('testimonialText').value,
+                rating: document.getElementById('testimonialRating').value,
+                avatar_initials: document.getElementById('testimonialInitials').value
+            };
+            if (!data.name || !data.text) { toast('Erro', 'Nome e depoimento são obrigatórios.'); return; }
+            const editId = document.getElementById('testimonialEditId').value;
+            if (editId) {
+                await SiteData.sbUpdateTestimonial(editId, data);
+            } else {
+                await SiteData.sbAddTestimonial(data);
+            }
+            closeTestimonialModal();
+            loadTestimonials();
+            toast('Salvo!', 'Depoimento salvo com sucesso.');
+        }
+
+        async function deleteTestimonial(id) {
+            if (!confirm('Excluir este depoimento?')) return;
+            await SiteData.sbDeleteTestimonial(id);
+            loadTestimonials();
+            toast('Excluído!', 'Depoimento removido.');
+        }
+
+        // Update loadAll to include blog and testimonials
         const origLoadAll = loadAll;
         loadAll = async function() {
             await Promise.all([
                 loadSeo(),
                 loadBlog(),
                 loadMedia(),
+                loadTestimonials(),
                 loadContacts(),
                 loadSocial()
             ]);

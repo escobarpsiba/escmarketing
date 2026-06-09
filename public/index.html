@@ -1942,79 +1942,8 @@
             <p>Feedbacks de quem já conhece o trabalho e a expertise dos nossos profissionais.</p>
         </div>
         <div class="testimonials-container">
-            <div class="testimonial-slider" id="testimonialSlider">
-                <div class="testimonial-card">
-                    <i class="fas fa-quote-left testimonial-quote"></i>
-                    <p class="testimonial-text">
-                        "A equipe da ESC trouxe uma visão renovada para nossa estratégia digital. 
-                        A combinação de experiência de mercado com novas abordagens fez toda 
-                        a diferença nos nossos resultados em apenas alguns meses."
-                    </p>
-                    <div class="testimonial-author">
-                        <div class="testimonial-avatar">CA</div>
-                        <div class="testimonial-info">
-                            <h4>Carlos Andrade</h4>
-                            <p>CEO, TechNova</p>
-                            <div class="testimonial-stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="testimonial-card">
-                    <i class="fas fa-quote-left testimonial-quote"></i>
-                    <p class="testimonial-text">
-                        "Desde o primeiro contato, percebemos o nível de profissionalismo da equipe. 
-                        Entregaram além do combinado, com uma qualidade que raramente encontramos 
-                        no mercado. Recomendo de olhos fechados."
-                    </p>
-                    <div class="testimonial-author">
-                        <div class="testimonial-avatar">JC</div>
-                        <div class="testimonial-info">
-                            <h4>Juliana Castro</h4>
-                            <p>Diretora de Marketing, BuildPrime</p>
-                            <div class="testimonial-stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="testimonial-card">
-                    <i class="fas fa-quote-left testimonial-quote"></i>
-                    <p class="testimonial-text">
-                        "O que mais nos impressionou foi o compromisso com a entrega. Mesmo sendo 
-                        uma nova agência, o time demonstrou uma maturidade e expertise que nos 
-                        deixou seguros desde o início. Resultado: projeto entregue no prazo e acima da expectativa."
-                    </p>
-                    <div class="testimonial-author">
-                        <div class="testimonial-avatar">RO</div>
-                        <div class="testimonial-info">
-                            <h4>Rafael Oliveira</h4>
-                            <p>Founder, CodeLab</p>
-                            <div class="testimonial-stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="testimonial-dots">
-                <div class="testimonial-dot active" onclick="goToTestimonial(0)"></div>
-                <div class="testimonial-dot" onclick="goToTestimonial(1)"></div>
-                <div class="testimonial-dot" onclick="goToTestimonial(2)"></div>
-            </div>
+            <div class="testimonial-slider" id="testimonialSlider"></div>
+            <div class="testimonial-dots" id="testimonialDots"></div>
             <div class="testimonial-nav">
                 <button onclick="prevTestimonial()"><i class="fas fa-chevron-left"></i></button>
                 <button onclick="nextTestimonial()"><i class="fas fa-chevron-right"></i></button>
@@ -2461,10 +2390,44 @@
         // Testimonial slider
         let currentTestimonial = 0;
         const testimonialSlider = document.getElementById('testimonialSlider');
-        const testimonialDots = document.querySelectorAll('.testimonial-dot');
-        const totalTestimonials = 3;
+        let testimonialDots = [];
+        let totalTestimonials = 0;
+        let testimonialInterval = null;
+
+        function renderTestimonials() {
+            const items = SiteData.getTestimonials();
+            testimonialSlider.innerHTML = items.map(t => {
+                const rating = parseInt(t.rating) || 5;
+                const stars = '<i class="fas fa-star"></i>'.repeat(rating) + (rating < 5 ? '<i class="fas fa-star" style="opacity:0.3"></i>'.repeat(5 - rating) : '');
+                return `
+                    <div class="testimonial-card">
+                        <i class="fas fa-quote-left testimonial-quote"></i>
+                        <p class="testimonial-text">"${t.text}"</p>
+                        <div class="testimonial-author">
+                            <div class="testimonial-avatar">${t.avatar_initials || '?'}</div>
+                            <div class="testimonial-info">
+                                <h4>${t.name}</h4>
+                                <p>${t.company || ''}</p>
+                                <div class="testimonial-stars">${stars}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            const dotsContainer = document.getElementById('testimonialDots');
+            dotsContainer.innerHTML = items.map((_, i) =>
+                `<div class="testimonial-dot${i === 0 ? ' active' : ''}" onclick="goToTestimonial(${i})"></div>`
+            ).join('');
+            testimonialDots = dotsContainer.querySelectorAll('.testimonial-dot');
+            totalTestimonials = items.length;
+            currentTestimonial = 0;
+
+            if (testimonialInterval) clearInterval(testimonialInterval);
+            if (totalTestimonials > 1) testimonialInterval = setInterval(nextTestimonial, 6000);
+        }
 
         function updateTestimonial() {
+            if (!totalTestimonials) return;
             testimonialSlider.scrollTo({
                 left: currentTestimonial * testimonialSlider.offsetWidth,
                 behavior: 'smooth'
@@ -2475,11 +2438,13 @@
         }
 
         function nextTestimonial() {
+            if (!totalTestimonials) return;
             currentTestimonial = (currentTestimonial + 1) % totalTestimonials;
             updateTestimonial();
         }
 
         function prevTestimonial() {
+            if (!totalTestimonials) return;
             currentTestimonial = (currentTestimonial - 1 + totalTestimonials) % totalTestimonials;
             updateTestimonial();
         }
@@ -2489,8 +2454,7 @@
             updateTestimonial();
         }
 
-        // Auto slide testimonials
-        setInterval(nextTestimonial, 6000);
+        renderTestimonials();
 
         // FAQ
         function toggleFaq(element) {

@@ -30,7 +30,12 @@ const SiteData = {
         address: 'Av. Paulista, 1000 - São Paulo, SP',
         hours: 'Seg - Sex: 9h às 18h'
       },
-      portfolio: []
+      portfolio: [],
+      testimonials: [
+        { id: 'seed-t-1', name: 'Carlos Andrade', company: 'CEO, TechNova', text: 'A equipe da ESC trouxe uma visão renovada para nossa estratégia digital. A combinação de experiência de mercado com novas abordagens fez toda a diferença nos nossos resultados em apenas alguns meses.', rating: 5, avatar_initials: 'CA' },
+        { id: 'seed-t-2', name: 'Juliana Castro', company: 'Diretora de Marketing, BuildPrime', text: 'Desde o primeiro contato, percebemos o nível de profissionalismo da equipe. Entregaram além do combinado, com uma qualidade que raramente encontramos no mercado. Recomendo de olhos fechados.', rating: 5, avatar_initials: 'JC' },
+        { id: 'seed-t-3', name: 'Rafael Oliveira', company: 'Founder, CodeLab', text: 'O que mais nos impressionou foi o compromisso com a entrega. Mesmo sendo uma nova agência, o time demonstrou uma maturidade e expertise que nos deixou seguros desde o início. Resultado: projeto entregue no prazo e acima da expectativa.', rating: 5, avatar_initials: 'RO' }
+      ]
     };
     return defaults[key] || null;
   },
@@ -274,6 +279,26 @@ const SiteData = {
     supabase.delete('blog_posts', 'id', id).catch(() => {});
   },
 
+  async sbGetTestimonials() {
+    const rows = await this.sbList('testimonials');
+    if (rows && rows.length) return rows.map(r => ({ id: r.id, name: r.name, company: r.company, text: r.text, rating: r.rating, avatar_initials: r.avatar_initials }));
+    return this.getTestimonials();
+  },
+  async sbAddTestimonial(item) {
+    item.id = Date.now().toString(36);
+    this.addTestimonial(item);
+    supabase.post('testimonials', { ...item }).catch(() => {});
+    return item;
+  },
+  async sbUpdateTestimonial(id, data) {
+    this.updateTestimonial(id, data);
+    supabase.patch('testimonials', { ...data }, 'id', id).catch(() => {});
+  },
+  async sbDeleteTestimonial(id) {
+    this.deleteTestimonial(id);
+    supabase.delete('testimonials', 'id', id).catch(() => {});
+  },
+
   getBlogPosts() { return this.get('blog_posts') || []; },
   setBlogPosts(d) { this.set('blog_posts', d); },
   addBlogPost(item) {
@@ -299,5 +324,23 @@ const SiteData = {
   },
   deleteBlogPost(id) {
     this.set('blog_posts', this.getBlogPosts().filter(p => p.id !== id));
+  },
+
+  getTestimonials() { return this.getWithFallback('testimonials'); },
+  setTestimonials(d) { this.set('testimonials', d); },
+  addTestimonial(item) {
+    const list = this.getTestimonials();
+    if (!item.id) item.id = Date.now().toString(36);
+    list.unshift(item);
+    this.set('testimonials', list);
+    return item;
+  },
+  updateTestimonial(id, data) {
+    const list = this.getTestimonials();
+    const idx = list.findIndex(i => i.id === id);
+    if (idx > -1) { list[idx] = { ...list[idx], ...data }; this.set('testimonials', list); }
+  },
+  deleteTestimonial(id) {
+    this.set('testimonials', this.getTestimonials().filter(t => t.id !== id));
   }
 };
