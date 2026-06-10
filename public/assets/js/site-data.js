@@ -283,11 +283,15 @@ const SiteData = {
   async sbGetTestimonials() {
     const rows = await this.sbList('testimonials');
     const local = this.get('testimonials') || [];
+    const defaults = this.getDefault('testimonials') || [];
     const supabaseIds = new Set((rows || []).map(r => r.id));
     const merged = [];
+    const seenIds = new Set();
 
     for (const item of local) {
       merged.push(item);
+      seenIds.add(item.id);
+      if (item.id && item.id.startsWith('seed-')) continue;
       if (supabaseIds.has(item.id)) {
         try { await supabase.patch('testimonials', { name: item.name, company: item.company, text: item.text, rating: item.rating, avatar_initials: item.avatar_initials }, 'id', item.id); } catch {}
       } else {
@@ -296,19 +300,26 @@ const SiteData = {
     }
 
     if (rows && rows.length) {
-      const localIds = new Set(merged.map(m => m.id));
       for (const r of rows) {
-        if (!localIds.has(r.id)) {
+        if (!seenIds.has(r.id)) {
           merged.push({ id: r.id, name: r.name, company: r.company, text: r.text, rating: r.rating, avatar_initials: r.avatar_initials });
+          seenIds.add(r.id);
         }
       }
     }
 
-    if (merged.length) {
-      this.setTestimonials(merged);
-      return merged;
+    if (merged.length < 3) {
+      for (const d of defaults) {
+        if (!seenIds.has(d.id)) {
+          merged.push(d);
+          seenIds.add(d.id);
+        }
+      }
     }
-    return this.getDefault('testimonials');
+
+    const realItems = merged.filter(item => item.id && !item.id.startsWith('seed-'));
+    if (realItems.length) this.setTestimonials(realItems);
+    return merged;
   },
   async sbAddTestimonial(item) {
     item.id = Date.now().toString(36);
