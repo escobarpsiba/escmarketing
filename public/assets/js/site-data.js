@@ -289,26 +289,36 @@ const SiteData = {
         return { id: r.id, name: r.name, company: r.company, text: r.text, rating: r.rating, avatar_initials: l?.avatar_initials || r.avatar_initials };
       });
       const localIds = new Set(merged.map(m => m.id));
-      local.forEach(item => { if (!localIds.has(item.id)) merged.push(item); });
+      for (const item of local) {
+        if (!localIds.has(item.id)) {
+          merged.push(item);
+          try { await supabase.post('testimonials', { ...item }); } catch {}
+        }
+      }
       this.setTestimonials(merged);
       return merged;
     }
-    if (local.length) return local;
+    if (local.length) {
+      for (const item of local) {
+        try { await supabase.post('testimonials', { ...item }); } catch {}
+      }
+      return local;
+    }
     return this.getDefault('testimonials');
   },
   async sbAddTestimonial(item) {
     item.id = Date.now().toString(36);
     this.addTestimonial(item);
-    supabase.post('testimonials', { ...item }).catch(() => {});
+    try { await supabase.post('testimonials', { ...item }); } catch {}
     return item;
   },
   async sbUpdateTestimonial(id, data) {
     this.updateTestimonial(id, data);
-    supabase.patch('testimonials', { ...data }, 'id', id).catch(() => {});
+    try { await supabase.patch('testimonials', { ...data }, 'id', id); } catch {}
   },
   async sbDeleteTestimonial(id) {
     this.deleteTestimonial(id);
-    supabase.delete('testimonials', 'id', id).catch(() => {});
+    try { await supabase.delete('testimonials', 'id', id); } catch {}
   },
 
   getBlogPosts() { return this.get('blog_posts') || []; },
