@@ -282,7 +282,17 @@ const SiteData = {
 
   async sbGetTestimonials() {
     const rows = await this.sbList('testimonials');
-    if (rows && rows.length) return rows.map(r => ({ id: r.id, name: r.name, company: r.company, text: r.text, rating: r.rating, avatar_initials: r.avatar_initials }));
+    if (rows && rows.length) {
+      const local = this.getTestimonials();
+      const merged = rows.map(r => {
+        const l = local.find(item => item.id === r.id);
+        return { id: r.id, name: r.name, company: r.company, text: r.text, rating: r.rating, avatar_initials: l?.avatar_initials || r.avatar_initials };
+      });
+      const localIds = new Set(merged.map(m => m.id));
+      local.forEach(item => { if (!localIds.has(item.id)) merged.push(item); });
+      this.setTestimonials(merged);
+      return merged;
+    }
     return this.getTestimonials();
   },
   async sbAddTestimonial(item) {
