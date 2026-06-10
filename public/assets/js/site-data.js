@@ -282,8 +282,8 @@ const SiteData = {
 
   async sbGetTestimonials() {
     const rows = await this.sbList('testimonials');
+    const local = this.get('testimonials') || [];
     if (rows && rows.length) {
-      const local = this.getTestimonials();
       const merged = rows.map(r => {
         const l = local.find(item => item.id === r.id);
         return { id: r.id, name: r.name, company: r.company, text: r.text, rating: r.rating, avatar_initials: l?.avatar_initials || r.avatar_initials };
@@ -293,7 +293,8 @@ const SiteData = {
       this.setTestimonials(merged);
       return merged;
     }
-    return this.getTestimonials();
+    if (local.length) return local;
+    return this.getDefault('testimonials');
   },
   async sbAddTestimonial(item) {
     item.id = Date.now().toString(36);

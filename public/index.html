@@ -2192,8 +2192,8 @@
         <button class="toast-close" onclick="hideToast()"><i class="fas fa-times"></i></button>
     </div>
 
-    <script src="assets/js/supabase.js?v=5"></script>
-    <script src="assets/js/site-data.js?v=5"></script>
+    <script src="assets/js/supabase.js?v=6"></script>
+    <script src="assets/js/site-data.js?v=6"></script>
     <script>
         // Loader
         window.addEventListener('load', () => {
@@ -2343,8 +2343,7 @@
         // Testimonials
         const testimonialSlider = document.getElementById('testimonialSlider');
 
-        async function renderTestimonials() {
-            const items = await SiteData.sbGetTestimonials();
+        function renderTestimonialCards(items) {
             testimonialSlider.innerHTML = items.map(t => {
                 const rating = parseInt(t.rating) || 5;
                 const stars = '<i class="fas fa-star"></i>'.repeat(rating) + (rating < 5 ? '<i class="fas fa-star" style="opacity:0.3"></i>'.repeat(5 - rating) : '');
@@ -2363,6 +2362,13 @@
                     </div>
                 `;
             }).join('');
+        }
+
+        async function renderTestimonials() {
+            const cached = SiteData.get('testimonials');
+            if (cached) renderTestimonialCards(cached);
+            const items = await SiteData.sbGetTestimonials();
+            renderTestimonialCards(items);
         }
 
         renderTestimonials();
