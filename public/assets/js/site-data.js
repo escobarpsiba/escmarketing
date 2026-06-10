@@ -283,26 +283,30 @@ const SiteData = {
   async sbGetTestimonials() {
     const rows = await this.sbList('testimonials');
     const local = this.get('testimonials') || [];
-    if (rows && rows.length) {
-      const merged = rows.map(r => {
-        const l = local.find(item => item.id === r.id);
-        return { id: r.id, name: r.name, company: r.company, text: r.text, rating: r.rating, avatar_initials: l?.avatar_initials || r.avatar_initials };
-      });
-      const localIds = new Set(merged.map(m => m.id));
-      for (const item of local) {
-        if (!localIds.has(item.id)) {
-          merged.push(item);
-          try { await supabase.post('testimonials', { ...item }); } catch {}
-        }
-      }
-      this.setTestimonials(merged);
-      return merged;
-    }
-    if (local.length) {
-      for (const item of local) {
+    const supabaseIds = new Set((rows || []).map(r => r.id));
+    const merged = [];
+
+    for (const item of local) {
+      merged.push(item);
+      if (supabaseIds.has(item.id)) {
+        try { await supabase.patch('testimonials', { name: item.name, company: item.company, text: item.text, rating: item.rating, avatar_initials: item.avatar_initials }, 'id', item.id); } catch {}
+      } else {
         try { await supabase.post('testimonials', { ...item }); } catch {}
       }
-      return local;
+    }
+
+    if (rows && rows.length) {
+      const localIds = new Set(merged.map(m => m.id));
+      for (const r of rows) {
+        if (!localIds.has(r.id)) {
+          merged.push({ id: r.id, name: r.name, company: r.company, text: r.text, rating: r.rating, avatar_initials: r.avatar_initials });
+        }
+      }
+    }
+
+    if (merged.length) {
+      this.setTestimonials(merged);
+      return merged;
     }
     return this.getDefault('testimonials');
   },
