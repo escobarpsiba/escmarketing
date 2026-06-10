@@ -397,6 +397,11 @@
                         <label>URL da Imagem OG (Open Graph)</label>
                         <input type="text" id="seoOgImage" placeholder="assets/images/logo-esc.png">
                     </div>
+                    <div class="form-group">
+                        <label>Palavras-chave (Keywords)</label>
+                        <input type="text" id="seoKeywords" placeholder="marketing digital, agência digital, seo, desenvolvimento web" data-tags="true">
+                        <small style="color:var(--text-dim);font-size:0.8rem;margin-top:0.3rem;display:block;">Digite as palavras-chave separadas por vírgula</small>
+                    </div>
                 </div>
                 <div class="card">
                     <h2>Pré-visualização no Google</h2>
@@ -713,6 +718,7 @@
             document.getElementById('seoTitle').value = seo.title;
             document.getElementById('seoDescription').value = seo.description;
             document.getElementById('seoOgImage').value = seo.ogImage;
+            document.getElementById('seoKeywords').value = seo.keywords || '';
             updatePreview();
         }
 
@@ -725,12 +731,14 @@
 
         document.getElementById('seoTitle').addEventListener('input', updatePreview);
         document.getElementById('seoDescription').addEventListener('input', updatePreview);
+        document.getElementById('seoKeywords').addEventListener('input', updatePreview);
 
         async function saveSeo() {
             await SiteData.sbSetSeo({
                 title: document.getElementById('seoTitle').value,
                 description: document.getElementById('seoDescription').value,
-                ogImage: document.getElementById('seoOgImage').value
+                ogImage: document.getElementById('seoOgImage').value,
+                keywords: document.getElementById('seoKeywords').value
             });
             toast('SEO Salvo!', 'As configurações de SEO foram atualizadas.');
         }

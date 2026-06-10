@@ -15,7 +15,8 @@ const SiteData = {
       seo: {
         title: 'ESC Marketing And Development | Agência Digital',
         description: 'Profissionais com mais de 15 anos de mercado unidos para criar soluções digitais de alto impacto.',
-        ogImage: 'assets/images/logo-esc.png'
+        ogImage: 'assets/images/logo-esc.png',
+        keywords: ''
       },
       social: {
         linkedin: '#',
@@ -66,11 +67,11 @@ const SiteData = {
 
   async sbGetSeo() {
     const row = await this.sbGet('seo');
-    if (row) return { title: row.title, description: row.description, ogImage: row.og_image };
+    if (row) return { title: row.title, description: row.description, ogImage: row.og_image, keywords: row.keywords || '' };
     return this.getWithFallback('seo');
   },
   async sbSetSeo(d) {
-    const ok = await this.sbSet('seo', { title: d.title, description: d.description, og_image: d.ogImage });
+    const ok = await this.sbSet('seo', { title: d.title, description: d.description, og_image: d.ogImage, keywords: d.keywords });
     if (!ok) this.setSeo(d);
   },
 
