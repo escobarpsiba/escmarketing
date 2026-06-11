@@ -44,9 +44,8 @@ const supabase = {
     } catch { /* RPC not available yet */ }
   },
 
-  async uploadImage(bucket, path, file) {
-    await this.ensureBucket(bucket);
-    const res = await fetch(`${this.url}/storage/v1/upload/${bucket}/${path}`, {
+  async _storageUpload(endpoint, bucket, path, file) {
+    const res = await fetch(`${this.url}/storage/v1/${endpoint}/${bucket}/${path}`, {
       method: 'POST',
       headers: {
         'apikey': this.anonKey,
@@ -58,9 +57,25 @@ const supabase = {
     });
     if (!res.ok) {
       const text = await res.text();
-      throw new Error(`Storage upload to bucket "${bucket}" failed (${res.status}): ${text}`);
+      throw new Error(`${endpoint} (${res.status}): ${text}`);
     }
-    return `${this.url}/storage/v1/object/public/${bucket}/${path}`;
+  },
+
+  async uploadImage(bucket, path, file) {
+    await this.ensureBucket(bucket);
+    const publicUrl = `${this.url}/storage/v1/object/public/${bucket}/${path}`;
+    let lastErr;
+    for (const ep of ['object', 'upload']) {
+      try {
+        await this._storageUpload(ep, bucket, path, file);
+        return publicUrl;
+      } catch (err) {
+        lastErr = err;
+      }
+    }
+    throw new Error(`Upload para o Supabase Storage falhou após 2 tentativas. ` +
+      `Verifique se o bucket "${bucket}" existe e as políticas RLS estão configuradas. ` +
+      `Detalhes: ${lastErr.message}`);
   },
 
   async isAvailable() {

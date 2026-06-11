@@ -834,10 +834,9 @@
                     const url = await supabase.uploadImage('images', path, file);
                     await SiteData.sbAddMediaItem({ name: file.name, data: url });
                 } catch (err) {
-                    console.error('Storage upload failed, falling back to base64:', err);
-                    const reader = new FileReader();
-                    const data = await new Promise(resolve => { reader.onload = ev => resolve(ev.target.result); reader.readAsDataURL(file); });
-                    await SiteData.sbAddMediaItem({ name: file.name, data });
+                    console.error('Upload failed:', err);
+                    const hint = err.message.includes('CORS') ? 'Possível bloqueio CORS.' : '';
+                    toast('Erro no Upload', `Não foi possível enviar "${file.name}". ${hint} Verifique o console (F12) para detalhes.`);
                 }
                 processed++;
                 if (processed === total) {
