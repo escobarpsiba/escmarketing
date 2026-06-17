@@ -1197,20 +1197,76 @@
             .nav-links { display: none; }
             .mobile-menu-btn { display: block; }
             .nav-cta { display: none; }
-            .stats-bar { gap: 2rem; }
-            .stat-number { font-size: 2rem; }
+            nav { padding: 0.8rem 5%; }
+            section { padding: 60px 5%; }
+            .hero { min-height: auto; padding: 90px 5% 50px; }
+            .hero-content { padding: 30px 0; max-width: 100%; }
+            .hero h1 { font-size: 36px; }
+            .hero p { font-size: 14px; }
+            .play-btn { width: 60px; height: 60px; right: 20px; font-size: 20px; }
+            .stats-bar { gap: 1.5rem; padding: 1.5rem 5%; flex-wrap: wrap; }
+            .stat-number { font-size: 1.8rem; }
+            .stat-label { font-size: 0.75rem; }
             .services-grid { grid-template-columns: 1fr; }
-            .portfolio-grid { grid-template-columns: 1fr; }
+            .service-card { padding: 1.5rem; }
+            .section-header { margin-bottom: 2rem; }
+            .section-header h2 { font-size: 28px; }
+            .portfolio-grid { grid-template-columns: 1fr; gap: 1rem; }
             .process-grid { grid-template-columns: 1fr; }
+            .process-card:not(:last-child)::after { display: none; }
+            .about-container { grid-template-columns: 1fr; gap: 2rem; }
+            .about-visual { order: -1; max-width: 500px; margin: 0 auto; }
             .about-features { grid-template-columns: 1fr; }
-            .footer-grid { grid-template-columns: 1fr 1fr; }
+            .about-content h2 { font-size: 28px; }
+            .about-content > p { font-size: 0.95rem; }
+            .testimonial-card { padding: 1.5rem; }
+            .contact-container { grid-template-columns: 1fr; }
+            .faq-item { padding: 0; }
+            .faq-question { padding: 1rem 1.2rem; font-size: 0.95rem; }
+            .faq-answer { padding: 0 1.2rem 1rem; }
+            .contact-form { padding: 0; }
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
             .form-row { grid-template-columns: 1fr; }
-            .cta-box { padding: 2rem; }
+            .cta-box { padding: 1.5rem; }
+            .cta-box h3 { font-size: 1.3rem; }
             .floating-card { display: none; }
         }
         @media (max-width: 480px) {
-            .footer-grid { grid-template-columns: 1fr; }
-            .footer-bottom { flex-direction: column; text-align: center; }
+            nav { padding: 0.6rem 5%; }
+            section { padding: 40px 5%; }
+            .hero { padding: 80px 5% 35px; }
+            .hero-content { padding: 20px 0; }
+            .hero h1 { font-size: 26px; }
+            .hero p { font-size: 13px; }
+            .hero-badge { font-size: 11px; letter-spacing: 2px; }
+            .hero-buttons { flex-direction: column; align-items: stretch; }
+            .hero-buttons .btn-primary,
+            .hero-buttons .btn-secondary { justify-content: center; padding: 12px 24px; font-size: 13px; }
+            .play-btn { display: none; }
+            .stats-bar { gap: 0.8rem; padding: 1rem 5%; }
+            .stat-number { font-size: 1.3rem; }
+            .stat-label { font-size: 0.65rem; }
+            .section-header { margin-bottom: 1.5rem; }
+            .section-header h2 { font-size: 22px; }
+            .section-header p { font-size: 0.85rem; }
+            .service-card { padding: 1.2rem; }
+            .service-card h3 { font-size: 1.1rem; }
+            .service-card p { font-size: 0.85rem; }
+            .service-icon { width: 48px; height: 48px; font-size: 1.2rem; margin-bottom: 1rem; }
+            .about-container { gap: 1.5rem; }
+            .about-content h2 { font-size: 22px; }
+            .about-content > p { font-size: 0.85rem; }
+            .about-feature { gap: 0.8rem; }
+            .testimonial-card { padding: 1.2rem; }
+            .testimonial-text { font-size: 0.95rem; }
+            .cta-box { padding: 1.2rem; }
+            .cta-box h3 { font-size: 1.1rem; }
+            .cta-box p { font-size: 0.85rem; }
+            .footer-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+            .footer-bottom { flex-direction: column; text-align: center; gap: 0.5rem; }
+            .footer-column h4 { font-size: 1rem; }
+            .portfolio-grid { gap: 0.8rem; }
+            .portfolio-item { aspect-ratio: 16/9; }
         }
 
         /* Mobile Menu */
@@ -1809,17 +1865,17 @@
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2rem;margin-bottom:2.5rem;position:relative;">
                 <div>
                     <div style="width:60px;height:60px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.5rem;color:#fff;">1</div>
-                    <h4 style="font-family:'Space Grotesk',sans-serif;margin-bottom:0.5rem;">Conte sua Ideia</h4>
+                    <h4 style="font-family:'Poppins',sans-serif;font-weight:700;margin-bottom:0.5rem;">Conte sua Ideia</h4>
                     <p style="color:var(--text-muted);font-size:0.9rem;">Descreva seu projeto, objetivos e expectativas</p>
                 </div>
                 <div>
                     <div style="width:60px;height:60px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.5rem;color:#fff;">2</div>
-                    <h4 style="font-family:'Space Grotesk',sans-serif;margin-bottom:0.5rem;">Analisamos</h4>
+                    <h4 style="font-family:'Poppins',sans-serif;font-weight:700;margin-bottom:0.5rem;">Analisamos</h4>
                     <p style="color:var(--text-muted);font-size:0.9rem;">Nossa equipe avalia e prepara a melhor estratégia</p>
                 </div>
                 <div>
                     <div style="width:60px;height:60px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.5rem;color:#fff;">3</div>
-                    <h4 style="font-family:'Space Grotesk',sans-serif;margin-bottom:0.5rem;">Receba o Orçamento</h4>
+                    <h4 style="font-family:'Poppins',sans-serif;font-weight:700;margin-bottom:0.5rem;">Receba o Orçamento</h4>
                     <p style="color:var(--text-muted);font-size:0.9rem;">Proposta personalizada em até 24 horas</p>
                 </div>
             </div>
