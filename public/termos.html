@@ -6,26 +6,30 @@
     <title>ESC Marketing - Termos de Uso</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
-            --primary: #6366f1;
-            --secondary: #ec4899;
-            --accent: #06b6d4;
-            --dark: #0f172a;
-            --darker: #020617;
-            --text: #f8fafc;
-            --text-muted: #94a3b8;
-            --glass: rgba(30,41,59,0.6);
-            --glass-border: rgba(255,255,255,0.08);
-            --gradient-1: linear-gradient(135deg, #6366f1 0%, #ec4899 50%, #06b6d4 100%);
+            --primary: #ec1c7d;
+            --primary-dark: #c91668;
+            --secondary: #1a1340;
+            --accent: #1ba6e8;
+            --dark: #1a1340;
+            --darker: #0f0a2a;
+            --dark-light: #2a2250;
+            --dark-lighter: #3d3570;
+            --text: #333333;
+            --text-muted: #666666;
+            --text-dim: #999999;
+            --glass: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(0, 0, 0, 0.08);
+            --gradient-1: linear-gradient(135deg, #ec1c7d 0%, #1a1340 100%);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; overflow-x: hidden; }
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--darker);
+            font-family: 'Poppins', sans-serif;
+            background: #ffffff;
             color: var(--text);
             min-height: 100vh;
             overflow-x: hidden;
@@ -34,10 +38,11 @@
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--darker); }
         ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #4f46e5; }
+        ::-webkit-scrollbar-thumb:hover { background: #c91668; }
         ::selection { background: var(--primary); color: #fff; }
         a { color: var(--primary); text-decoration: none; transition: all 0.3s ease; }
         a:hover { color: var(--accent); }
+        button { background: var(--primary); border-radius: 30px; border: none; color: #fff; cursor: pointer; padding: 0.6rem 1.5rem; font-family: 'Poppins', sans-serif; font-weight: 600; }
         ul { list-style: none; }
 
         .bg-grid {
@@ -45,8 +50,8 @@
             top: 0; left: 0;
             width: 100%; height: 100%;
             background-image:
-                linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px);
+                linear-gradient(rgba(236, 28, 125, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(236, 28, 125, 0.03) 1px, transparent 1px);
             background-size: 60px 60px;
             pointer-events: none;
             z-index: 0;
@@ -91,7 +96,7 @@
         .nav-links a::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--gradient-1); transition: width 0.3s ease; border-radius: 2px; }
         .nav-links a:hover { color: var(--text); }
         .nav-links a:hover::after { width: 100%; }
-        .nav-cta { background: var(--gradient-1); color: #fff !important; padding: 0.6rem 1.5rem; border-radius: 50px; font-weight: 600; font-size: 0.9rem; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .nav-cta { background: var(--primary); color: #fff !important; padding: 0.6rem 1.5rem; border-radius: 30px; font-weight: 600; font-size: 0.9rem; transition: transform 0.3s ease, box-shadow 0.3s ease; }
         .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(99,102,241,0.3); }
         .mobile-menu-btn { display: none; background: none; border: none; color: var(--text); font-size: 1.5rem; cursor: pointer; padding: 0.5rem; }
 
@@ -143,12 +148,12 @@
         .footer-bottom .legal-links a:hover { color: var(--primary); }
 
         .legal-header { padding: 140px 5% 60px; text-align: center; position: relative; z-index: 2; }
-        .legal-header h1 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(2rem, 4vw, 3rem); }
+        .legal-header h1 { font-family: 'Poppins', sans-serif; font-size: clamp(2rem, 4vw, 3rem); }
         .legal-header p { color: var(--text-muted); margin-top: 1rem; font-size: 1.1rem; }
         .legal-content { max-width: 900px; margin: 0 auto; padding: 0 5% 80px; position: relative; z-index: 2; }
         .legal-content section { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 24px; padding: 2.5rem; margin-bottom: 2rem; }
-        .legal-content h2 { font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; margin-bottom: 1rem; background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .legal-content h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; margin-bottom: 0.8rem; margin-top: 1.5rem; color: var(--text); }
+        .legal-content h2 { font-family: 'Poppins', sans-serif; font-size: 1.5rem; margin-bottom: 1rem; background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .legal-content h3 { font-family: 'Poppins', sans-serif; font-size: 1.2rem; margin-bottom: 0.8rem; margin-top: 1.5rem; color: var(--text); }
         .legal-content p { color: var(--text-muted); line-height: 1.8; margin-bottom: 1rem; }
         .legal-content ul { color: var(--text-muted); padding-left: 1.5rem; margin-bottom: 1rem; }
         .legal-content ul li { margin-bottom: 0.5rem; line-height: 1.7; }
@@ -192,7 +197,7 @@
         <a href="index.html#sobre" onclick="toggleMobileMenu()">Sobre</a>
         <a href="index.html#portfolio" onclick="toggleMobileMenu()">Portfólio</a>
         <a href="index.html#contato" onclick="toggleMobileMenu()">Contato</a>
-        <a href="index.html#contato" onclick="toggleMobileMenu()" style="margin-top:1rem;background:var(--gradient-1);color:#fff!important;text-align:center;padding:0.8rem;border-radius:50px;border:none;">Começar Projeto</a>
+        <a href="index.html#contato" onclick="toggleMobileMenu()" style="margin-top:1rem;background:var(--primary);color:#fff!important;text-align:center;padding:0.8rem;border-radius:30px;border:none;">Começar Projeto</a>
     </div>
 
     <header class="legal-header">

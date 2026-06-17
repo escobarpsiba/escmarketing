@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Aconte - Business Conference and Event Planning</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+  body{color:#333;line-height:1.6;}
+  a{text-decoration:none;color:inherit;}
+  img{max-width:100%;display:block;}
+  .container{max-width:1200px;margin:0 auto;padding:0 20px;}
+  .btn{display:inline-block;background:#ec1c7d;color:#fff;padding:14px 32px;border-radius:30px;font-weight:600;font-size:14px;text-transform:uppercase;border:none;cursor:pointer;transition:.3s;}
+  .btn:hover{background:#c91668;}
+  .btn-outline{background:transparent;border:2px solid #ec1c7d;color:#ec1c7d;}
+  .section-tag{color:#ec1c7d;font-size:13px;font-weight:600;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;}
+  .section-title{font-size:38px;font-weight:800;color:#1a1340;margin-bottom:20px;}
+  .section-head{text-align:center;margin-bottom:50px;}
+  .diamond{width:10px;height:10px;background:#ec1c7d;transform:rotate(45deg);margin:15px auto;}
+
+  /* HERO */
+  .hero{position:relative;background:linear-gradient(rgba(26,19,64,.6),rgba(26,19,64,.6)),url('https://images.unsplash.com/photo-1531058020387-3be344556be6?w=1600') center/cover;min-height:600px;color:#fff;}
+  .navbar{display:flex;justify-content:space-between;align-items:center;padding:25px 0;}
+  .logo{font-size:26px;font-weight:800;display:flex;align-items:center;gap:8px;}
+  .logo i{color:#ec1c7d;}
+  .nav-links{display:flex;gap:30px;list-style:none;}
+  .nav-links a{font-size:14px;font-weight:500;text-transform:uppercase;}
+  .nav-links a:hover{color:#ec1c7d;}
+  .hero-content{padding:80px 0;max-width:600px;}
+  .hero-date{font-size:13px;letter-spacing:3px;text-transform:uppercase;color:#ec1c7d;font-weight:600;margin-bottom:15px;}
+  .hero h1{font-size:52px;font-weight:800;line-height:1.2;margin-bottom:15px;}
+  .hero p{font-size:15px;margin-bottom:30px;opacity:.9;}
+  .countdown{display:flex;gap:15px;}
+  .countdown div{background:#ec1c7d;color:#fff;padding:18px 25px;border-radius:30px;text-align:center;min-width:90px;}
+  .countdown div span{display:block;font-size:24px;font-weight:700;}
+  .play-btn{position:absolute;right:80px;top:50%;transform:translateY(-50%);width:90px;height:90px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#ec1c7d;font-size:28px;}
+
+  /* ABOUT */
+  .about{padding:90px 0;text-align:center;}
+  .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;margin-top:40px;text-align:left;}
+  .about-info{display:flex;gap:20px;margin:25px 0;}
+  .about-info div{background:#fff5f9;padding:15px;border-radius:8px;font-size:13px;}
+  .about-info i{color:#ec1c7d;margin-right:8px;}
+  .about-buttons{display:flex;gap:15px;}
+
+  /* SCHEDULE */
+  .schedule{padding:90px 0;background:#f6f7fb;}
+  .schedule-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:40px;}
+  .schedule-wrap{display:grid;grid-template-columns:200px 1fr;gap:30px;}
+  .days{display:flex;flex-direction:column;gap:10px;}
+  .day{background:#1a1340;color:#fff;padding:20px;border-radius:8px;position:relative;cursor:pointer;}
+  .day.active{background:#ec1c7d;}
+  .day.active::after{content:'';position:absolute;right:-10px;top:50%;transform:translateY(-50%);border:10px solid transparent;border-left-color:#ec1c7d;}
+  .day h4{font-size:18px;font-weight:700;}
+  .day span{font-size:12px;opacity:.8;}
+  .sessions{background:#fff;border-radius:8px;padding:30px;}
+  .session{display:grid;grid-template-columns:140px 1fr;gap:20px;padding:20px 0;border-bottom:1px dashed #ddd;}
+  .session:last-child{border-bottom:none;}
+  .session-time{color:#ec1c7d;font-weight:600;font-size:14px;}
+  .session-time span{display:block;color:#999;font-size:12px;}
+  .session h4{color:#1a1340;font-size:17px;margin-bottom:8px;}
+  .session p{font-size:13px;color:#777;}
+
+  /* WHY ATTEND */
+  .why{display:grid;grid-template-columns:1fr 1fr;min-height:500px;}
+  .why-img{background:url('https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800') center/cover;}
+  .why-content{background:#1a1340;color:#fff;padding:70px 60px;}
+  .why-content .section-tag{color:#ec1c7d;}
+  .why-content h2{font-size:36px;font-weight:800;margin-bottom:20px;}
+  .why-content > p{opacity:.8;margin-bottom:30px;font-size:14px;}
+  .why-item{display:flex;gap:15px;padding:18px;background:rgba(255,255,255,.05);border-radius:8px;margin-bottom:12px;}
+  .why-item.active{background:#ec1c7d;}
+  .why-item i{font-size:22px;}
+  .why-item h4{font-size:16px;margin-bottom:4px;}
+  .why-item p{font-size:13px;opacity:.85;}
+
+  /* TICKETS */
+  .tickets{padding:90px 0;background:#1a1340;color:#fff;text-align:center;}
+  .tickets .section-title{color:#fff;}
+  .ticket-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin-top:50px;}
+  .ticket{background:#fff;color:#333;padding:40px 30px;border-radius:8px;text-align:center;}
+  .ticket h4{color:#1a1340;font-size:16px;font-weight:700;margin-bottom:15px;text-transform:uppercase;}
+  .ticket .price{font-size:50px;font-weight:800;color:#ec1c7d;margin:10px 0;}
+  .ticket .price sup{font-size:24px;vertical-align:top;}
+  .ticket i.fa-ticket{font-size:30px;color:#1a1340;margin-bottom:15px;}
+  .ticket ul{list-style:none;margin:20px 0;font-size:13px;color:#666;}
+  .ticket ul li{padding:6px 0;border-bottom:1px dashed #eee;}
+
+  /* SPEAKERS */
+  .speakers{padding:90px 0;}
+  .speakers-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
+  .speakers-photos{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .speaker{position:relative;border-radius:8px;overflow:hidden;}
+  .speaker img{height:260px;width:100%;object-fit:cover;}
+  .speaker-name{position:absolute;bottom:15px;left:15px;background:#ec1c7d;color:#fff;padding:6px 15px;border-radius:20px;font-size:13px;font-weight:600;}
+
+  /* FESTIVALS */
+  .festivals{padding:90px 0;background:#f6f7fb;text-align:center;}
+  .fest-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin:50px 0;}
+  .fest{background:#fff;border-radius:8px;overflow:hidden;text-align:left;}
+  .fest img{height:200px;width:100%;object-fit:cover;}
+  .fest-body{padding:20px;}
+  .fest-tag{color:#ec1c7d;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;}
+  .fest h4{color:#1a1340;font-size:18px;margin:8px 0 12px;}
+  .fest-meta{font-size:12px;color:#777;display:flex;gap:15px;}
+
+  /* GROUP BOOKING */
+  .group{padding:60px 0;}
+  .group-box{background:linear-gradient(135deg,#1ba6e8,#0d7fb8);border-radius:12px;padding:40px;color:#fff;display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:center;overflow:hidden;position:relative;}
+  .group-box h3{font-size:28px;font-weight:800;margin-bottom:10px;}
+  .group-box p{font-size:14px;margin-bottom:20px;opacity:.95;}
+  .group-box img{border-radius:8px;height:200px;object-fit:cover;}
+
+  /* ARTICLES */
+  .articles{padding:90px 0;text-align:center;position:relative;}
+  .art-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:30px;margin-top:50px;text-align:left;}
+  .art{display:grid;grid-template-columns:80px 1fr;gap:20px;background:#fff;border:1px solid #eee;border-radius:8px;overflow:hidden;}
+  .art-date{background:#ec1c7d;color:#fff;text-align:center;padding:25px 10px;}
+  .art-date span{display:block;font-size:28px;font-weight:800;}
+  .art-date small{font-size:11px;text-transform:uppercase;}
+  .art-body{padding:20px 20px 20px 0;display:flex;gap:15px;align-items:center;}
+  .art-body img{width:100px;height:80px;object-fit:cover;border-radius:4px;}
+  .art-body h4{color:#1a1340;font-size:15px;margin-bottom:5px;}
+  .art-body p{font-size:12px;color:#777;}
+  .arrow{position:absolute;top:60%;width:40px;height:40px;background:#fff;border:1px solid #eee;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#ec1c7d;cursor:pointer;}
+  .arrow.left{left:20px;} .arrow.right{right:20px;}
+
+  /* NEWSLETTER */
+  .newsletter{padding:60px 0;text-align:center;}
+  .newsletter h3{font-size:24px;color:#1a1340;font-weight:700;margin-bottom:25px;}
+  .newsletter form{display:flex;gap:10px;max-width:700px;margin:0 auto;}
+  .newsletter input{flex:1;padding:15px 20px;border:1px solid #ddd;border-radius:30px;font-size:14px;}
+
+  .stripe{height:6px;display:flex;}
+  .stripe div{flex:1;}
+  .stripe div:nth-child(1){background:#ec1c7d;}
+  .stripe div:nth-child(2){background:#f5a623;}
+  .stripe div:nth-child(3){background:#7ed321;}
+  .stripe div:nth-child(4){background:#1ba6e8;}
+  .stripe div:nth-child(5){background:#9013fe;}
+
+  /* FOOTER */
+  footer{background:#1a1340;color:#fff;padding:60px 0 30px;text-align:center;}
+  footer .logo{justify-content:center;margin-bottom:20px;}
+  footer p{font-size:13px;opacity:.7;max-width:600px;margin:0 auto 25px;}
+  .footer-links{display:flex;gap:30px;justify-content:center;margin-bottom:30px;font-size:13px;}
+  .footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:25px;display:flex;justify-content:space-between;font-size:13px;opacity:.7;}
+  .socials{display:flex;gap:10px;}
+  .socials a{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;}
+  .socials a:nth-child(1){background:#3b5998;}
+  .socials a:nth-child(2){background:#1da1f2;}
+  .socials a:nth-child(3){background:#e1306c;}
+  .socials a:nth-child(4){background:#ff0000;}
+  .socials a:nth-child(5){background:#0077b5;}
+
+  @media(max-width:768px){
+    .hero h1{font-size:34px;}
+    .about-grid,.why,.ticket-grid,.speakers-grid,.fest-grid,.art-grid,.group-box,.schedule-wrap{grid-template-columns:1fr;}
+    .play-btn{display:none;}
+    .nav-links{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="container">
+    <nav class="navbar">
+      <div class="logo"><i class="fas fa-star"></i> Aconte</div>
+      <ul class="nav-links">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Events</a></li>
+        <li><a href="#">Schedule</a></li>
+        <li><a href="#">Speakers</a></li>
+        <li><a href="#">Pages</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="hero-content">
+      <div class="hero-date">25 - 28 December 2026</div>
+      <h1>Business Conference<br>and Event Planning</h1>
+      <p>Join the largest gathering of marketing professionals and event planners worldwide.</p>
+      <div class="countdown">
+        <div><span>00</span>Days</div>
+        <div><span>00</span>Hrs</div>
+        <div><span>00</span>Min</div>
+        <div><span>00</span>Sec</div>
+      </div>
+    </div>
+  </div>
+  <a href="#" class="play-btn"><i class="fas fa-play"></i></a>
+</header>
+
+<!-- ABOUT -->
+<section class="about">
+  <div class="container">
+    <div class="section-tag">About Our Event</div>
+    <div class="diamond"></div>
+    <h2 class="section-title">Think Digital Event<br>Experience</h2>
+    <div class="about-grid">
+      <div>
+        <p>Aconte is a global conference that brings together industry leaders, innovators, and creative thinkers to share knowledge and explore the future of digital marketing and event planning.</p>
+        <div class="about-info">
+          <div><i class="fas fa-map-marker-alt"></i> Main Location<br><strong>New York, USA</strong></div>
+          <div><i class="fas fa-calendar"></i> Event Date<br><strong>25 - 28 Dec 2026</strong></div>
+        </div>
+        <div class="about-buttons">
+          <a href="#" class="btn">Buy Ticket</a>
+          <a href="#" class="btn btn-outline">Learn More</a>
+        </div>
+      </div>
+      <div>
+        <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=600" alt="Conference">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCHEDULE -->
+<section class="schedule">
+  <div class="container">
+    <div class="schedule-head">
+      <div>
+        <div class="section-tag">Schedule Of Events</div>
+        <h2 class="section-title">Event Schedule</h2>
+      </div>
+      <a href="#" class="btn"><i class="fas fa-download"></i> Download Schedule</a>
+    </div>
+    <div class="schedule-wrap">
+      <div class="days">
+        <div class="day active"><h4>Day 1</h4><span>25 Dec 2026</span></div>
+        <div class="day"><h4>Day 2</h4><span>26 Dec 2026</span></div>
+        <div class="day"><h4>Day 3</h4><span>27 Dec 2026</span></div>
+        <div class="day"><h4>Day 4</h4><span>28 Dec 2026</span></div>
+      </div>
+      <div class="sessions">
+        <div class="session">
+          <div class="session-time">09:00 AM<span>James Carter</span></div>
+          <div><h4>Marketing Matters!</h4><p>Learn how leading brands turn marketing strategies into measurable growth and lasting impact.</p></div>
+        </div>
+        <div class="session">
+          <div class="session-time">10:30 AM<span>Sarah Lin</span></div>
+          <div><h4>We Have Top Executives & Start Up Here</h4><p>Hear from C-level executives about transforming ideas into successful ventures and scaling startups.</p></div>
+        </div>
+        <div class="session">
+          <div class="session-time">12:00 PM<span>Buffet Hall</span></div>
+          <div><h4>Lunch Party Four Food</h4><p>Network with peers over an exquisite multi-cuisine lunch curated by award winning chefs.</p></div>
+        </div>
+        <div class="session">
+          <div class="session-time">02:00 PM<span>Imogen Heap</span></div>
+          <div><h4>Breakout Sessions: Master Classes</h4><p>Dive deep into specialized workshops led by industry-leading masters of their crafts.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section class="why">
+  <div class="why-img"></div>
+  <div class="why-content">
+    <div class="section-tag">Reasons To Attend</div>
+    <h2>Why You Should Attend</h2>
+    <p>Discover why thousands of professionals join Aconte every year to learn, network and celebrate.</p>
+    <div class="why-item active">
+      <i class="fas fa-users"></i>
+      <div><h4>Meet People</h4><p>Connect with marketing leaders from around the world.</p></div>
+    </div>
+    <div class="why-item">
+      <i class="fas fa-microphone"></i>
+      <div><h4>Great Speakers</h4><p>Be inspired by world-class keynote presentations.</p></div>
+    </div>
+    <div class="why-item">
+      <i class="fas fa-music"></i>
+      <div><h4>Have Fun</h4><p>Enjoy parties, music and unforgettable experiences.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKETS -->
+<section class="tickets">
+  <div class="container">
+    <div class="section-tag">Choose Plans</div>
+    <h2 class="section-title">Get Your Ticket</h2>
+    <div class="ticket-grid">
+      <div class="ticket">
+        <h4>Student Pass</h4>
+        <i class="fas fa-ticket"></i>
+        <div class="price"><sup>$</sup>120</div>
+        <ul><li>Access to All Sessions</li><li>Lunch & Refreshments</li><li>Student ID Required</li></ul>
+        <a href="#" class="btn">Buy Now</a>
+      </div>
+      <div class="ticket">
+        <h4>Common Pass</h4>
+        <i class="fas fa-ticket"></i>
+        <div class="price"><sup>$</sup>250</div>
+        <ul><li>All Student Benefits</li><li>Workshop Access</li><li>Networking Dinner</li></ul>
+        <a href="#" class="btn">Buy Now</a>
+      </div>
+      <div class="ticket">
+        <h4>Premium Pass</h4>
+        <i class="fas fa-ticket"></i>
+        <div class="price"><sup>$</sup>390</div>
+        <ul><li>All Common Benefits</li><li>VIP Seating</li><li>Exclusive Speaker Meet</li></ul>
+        <a href="#" class="btn">Buy Now</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPEAKERS -->
+<section class="speakers">
+  <div class="container">
+    <div class="speakers-grid">
+      <div>
+        <div class="section-tag">Featured Speakers</div>
+        <h2 class="section-title">Sessions With<br>Speakers</h2>
+        <p>Meet our incredible lineup of world-class speakers who will share their insights and expertise.</p>
+        <br>
+        <a href="#" class="btn btn-outline">View All Speakers</a>
+      </div>
+      <div class="speakers-photos">
+        <div class="speaker"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400" alt=""><span class="speaker-name">Ginni Clancy</span></div>
+        <div class="speaker"><img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400" alt=""><span class="speaker-name">Arvids Balik</span></div>
+        <div class="speaker"><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400" alt=""><span class="speaker-name">Maxim Walker</span></div>
+        <div class="speaker"><img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400" alt=""><span class="speaker-name">Imogen Heap</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FESTIVALS -->
+<section class="festivals">
+  <div class="container">
+    <div class="section-tag">Event Plans</div>
+    <div class="diamond"></div>
+    <h2 class="section-title">Biggest Festivals</h2>
+    <div class="fest-grid">
+      <div class="fest">
+        <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600" alt="">
+        <div class="fest-body">
+          <span class="fest-tag">Concert</span>
+          <h4>Royal Festival 2023</h4>
+          <div class="fest-meta"><span><i class="far fa-calendar"></i> 25 Dec</span><span><i class="fas fa-map-marker-alt"></i> NY</span></div>
+        </div>
+      </div>
+      <div class="fest">
+        <img src="https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=600" alt="">
+        <div class="fest-body">
+          <span class="fest-tag">Concert</span>
+          <h4>Christmas Music Tour</h4>
+          <div class="fest-meta"><span><i class="far fa-calendar"></i> 26 Dec</span><span><i class="fas fa-map-marker-alt"></i> LA</span></div>
+        </div>
+      </div>
+      <div class="fest">
+        <img src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600" alt="">
+        <div class="fest-body">
+          <span class="fest-tag">Festival</span>
+          <h4>Music Festival 2023</h4>
+          <div class="fest-meta"><span><i class="far fa-calendar"></i> 27 Dec</span><span><i class="fas fa-map-marker-alt"></i> Miami</span></div>
+        </div>
+      </div>
+    </div>
+    <a href="#" class="btn">View All Events</a>
+  </div>
+</section>
+
+<!-- GROUP -->
+<section class="group">
+  <div class="container">
+    <div class="group-box">
+      <div>
+        <h3>Group Booking Discounts</h3>
+        <p>Bring your team and save big! Get exclusive group rates when you book five or more tickets.</p>
+        <a href="#" class="btn">Buy Now</a>
+      </div>
+      <img src="https://images.unsplash.com/photo-1556761175-b413da4baf72?w=600" alt="">
+    </div>
+  </div>
+</section>
+
+<!-- ARTICLES -->
+<section class="articles">
+  <div class="container">
+    <div class="section-tag">News & Articles</div>
+    <div class="diamond"></div>
+    <h2 class="section-title">Recent Articles</h2>
+    <div class="art-grid">
+      <div class="art">
+        <div class="art-date"><span>20</span><small>Dec</small></div>
+        <div class="art-body">
+          <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=300" alt="">
+          <div><h4>New Pasta Edition – Festivities Mix</h4><p>Discover seasonal flavors from top chefs.</p></div>
+        </div>
+      </div>
+      <div class="art">
+        <div class="art-date"><span>22</span><small>Dec</small></div>
+        <div class="art-body">
+          <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=300" alt="">
+          <div><h4>Innovative Festival Will Convene Thousands</h4><p>Three days of music, art and innovation.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="arrow left"><i class="fas fa-chevron-left"></i></div>
+  <div class="arrow right"><i class="fas fa-chevron-right"></i></div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="newsletter">
+  <div class="container">
+    <h3>Newsletter and You'll Get Festival<br>Special Offers</h3>
+    <form>
+      <input type="text" placeholder="Your Name">
+      <input type="email" placeholder="Email Address">
+      <button class="btn" type="submit">Subscribe</button>
+    </form>
+  </div>
+</section>
+
+<div class="stripe"><div></div><div></div><div></div><div></div><div></div></div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="logo"><i class="fas fa-star"></i> Aconte</div>
+    <p>Join us at the world's premier marketing and event planning conference. Connect, learn, and grow with industry leaders.</p>
+    <div class="footer-links">
+      <a href="#">Home</a><a href="#">About</a><a href="#">Events</a><a href="#">Speakers</a><a href="#">Contact</a>
+    </div>
+    <div class="footer-bottom">
+      <div><i class="fas fa-phone"></i> Call Us: +1 234 567 8900</div>
+      <div class="socials">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-youtube"></i></a>
+        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
