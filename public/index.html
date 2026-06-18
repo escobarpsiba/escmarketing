@@ -1195,9 +1195,9 @@
         }
         @media (max-width: 768px) {
             .nav-links { display: none; }
-            .mobile-menu-btn { display: block; margin-right: 0.5rem; }
+            .mobile-menu-btn { display: block; }
             .nav-cta { display: none; }
-            nav { padding: 0.8rem 5%; }
+            nav { justify-content: flex-start; gap: 0.5rem; padding: 0.8rem 5%; }
             body { overflow-x: hidden; }
             section { padding: 60px 5%; }
             .hero { min-height: auto; padding: 90px 5% 50px; }
@@ -1234,7 +1234,7 @@
             .floating-card { display: none; }
         }
         @media (max-width: 480px) {
-            nav { padding: 0.6rem 5%; }
+            nav { padding: 0.6rem 5%; justify-content: flex-start; gap: 0.5rem; }
             section { padding: 40px 5%; }
             .hero { padding: 80px 5% 35px; }
             .hero-content { padding: 20px 0; }
