@@ -873,7 +873,7 @@
             transition: max-height 0.4s ease, padding 0.4s ease;
         }
         .faq-item.active .faq-answer {
-            max-height: 300px;
+            max-height: 800px;
             padding: 0 1.5rem 1.5rem;
         }
         .faq-answer p {
@@ -1204,13 +1204,14 @@
             .hero h1 { font-size: 36px; }
             .hero p { font-size: 14px; }
             .play-btn { width: 60px; height: 60px; right: 20px; font-size: 20px; }
-            .stats-bar { gap: 1.5rem; padding: 1.5rem 5%; flex-wrap: wrap; }
+            .stats-bar { gap: 1.5rem; padding: 2rem 5%; flex-wrap: wrap; }
             .stat-number { font-size: 1.8rem; }
             .stat-label { font-size: 0.75rem; }
             .services-grid { grid-template-columns: 1fr; }
             .service-card { padding: 1.5rem; }
             .section-header { margin-bottom: 2rem; }
             .section-header h2 { font-size: 28px; }
+            #servicos { padding-top: 70px; }
             .portfolio-grid { grid-template-columns: 1fr; gap: 1rem; }
             .process-grid { grid-template-columns: 1fr; }
             .process-card:not(:last-child)::after { display: none; }
@@ -1243,7 +1244,7 @@
             .hero-buttons .btn-primary,
             .hero-buttons .btn-secondary { justify-content: center; padding: 12px 24px; font-size: 13px; }
             .play-btn { display: none; }
-            .stats-bar { gap: 0.8rem; padding: 1rem 5%; }
+            .stats-bar { gap: 0.8rem; padding: 1.5rem 5%; }
             .stat-number { font-size: 1.3rem; }
             .stat-label { font-size: 0.65rem; }
             .section-header { margin-bottom: 1.5rem; }
@@ -1893,7 +1894,7 @@
             <p>Tire suas dúvidas sobre nossos serviços e processo de trabalho.</p>
         </div>
         <div class="faq-container">
-            <div class="faq-item active">
+            <div class="faq-item">
                 <div class="faq-question" onclick="toggleFaq(this)">
                     <span>Quanto tempo leva para desenvolver um site?</span>
                     <i class="fas fa-chevron-down"></i>
